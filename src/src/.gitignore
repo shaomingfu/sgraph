@@ -2,3 +2,4 @@
 sgraph
 Makefile
 Makefile.in
+*.Po
