@@ -5,7 +5,6 @@
 #include "config.h"
 #include "assembler.h"
 #include "bundle.h"
-#include "gtf.h"
 #include "genome.h"
 
 assembler::assembler()
@@ -94,9 +93,6 @@ int assembler::process_bam(const string &file)
     bam_hdr_t *h= sam_hdr_read(fn);
     bam1_t *b = bam_init1();
 
-	ofstream fout;
-	if(output_file != "") fout.open(output_file);
-
 	bundle_base bb1;		// for + reads
 	bundle_base bb2;		// for - reads
     while(sam_read1(fn, h, b) >= 0)
@@ -128,7 +124,6 @@ int assembler::process_bam(const string &file)
     bam_destroy1(b);
     bam_hdr_destroy(h);
     sam_close(fn);
-	if(output_file != "") fout.close();
 
 	return 0;
 }
@@ -148,9 +143,8 @@ int assembler::process_bundle(bundle_base &bb, bam_hdr_t *h)
 	string chrm(buf);
 	bb.set_chrm(chrm);
 
-	vector<block> blocks;
 	bundle bd(bb);
-	bd.build(blocks);
+	bd.build();
 
 	set<int32_t> s1;
 	set<int32_t> s2;
@@ -161,9 +155,10 @@ int assembler::process_bundle(bundle_base &bb, bam_hdr_t *h)
 	if(mss.find(chrm) != mss.end()) ss1 = mss[chrm];
 	if(mtt.find(chrm) != mtt.end()) ss2 = mtt[chrm];
 
-	for(int i = 0; i < blocks.size(); i++)
+	for(int i = 0; i < bd.blocks.size(); i++)
 	{
-		blocks[i].build_samples(ss1, ss2);
+		block &b = bd.blocks[i];
+		b.build_samples(ss1, ss2);
 	}
 
 	bb.clear();

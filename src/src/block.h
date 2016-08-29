@@ -12,7 +12,8 @@ class block
 public:
 	string chrm;
 	int32_t pos;
-	vector<int> s;
+	vector<int> s;		// abundance
+	vector<double> q;	// ave-quality
 	static int index;
 	bool ltype;
 	bool rtype;

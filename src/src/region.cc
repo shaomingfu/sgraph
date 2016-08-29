@@ -1,13 +1,12 @@
 #include "region.h"
 #include "config.h"
 #include "util.h"
-#include "binomial.h"
 #include <algorithm>
 
 using namespace std;
 
-region::region(const string &_chrm, int32_t _lpos, int32_t _rpos, int _ltype, int _rtype, const split_interval_map *_imap)
-	:chrm(_chrm), lpos(_lpos), rpos(_rpos), imap(_imap), ltype(_ltype), rtype(_rtype)
+region::region(const string &_chrm, int32_t _lpos, int32_t _rpos, int _ltype, int _rtype, const split_interval_map *_imap, const split_interval_map *_qmap)
+	:chrm(_chrm), lpos(_lpos), rpos(_rpos), imap(_imap), qmap(_qmap), ltype(_ltype), rtype(_rtype)
 {
 	lcore = lpos;
 	rcore = rpos;
@@ -26,10 +25,15 @@ int region::build_block(block &b)
 	b.chrm = chrm;
 	b.pos = lcore;
 	b.s.clear();
+	b.q.clear();
 	for(int i = lcore; i < rcore; i++)
 	{
 		int32_t w = compute_overlap(*imap, i);
+		double q = compute_overlap(*qmap, i);
+		if(w <= 0) q = -1;
+		else q = q * 1.0 / w; 
 		b.s.push_back(w);
+		b.q.push_back(q);
 	}
 	if(ltype == START_BOUNDARY) b.ltype = true;
 	else b.ltype = false;
@@ -37,18 +41,6 @@ int region::build_block(block &b)
 	else b.rtype = false;
 
 	return 0;
-}
-
-vector<partial_exon> region::build()
-{
-	init();
-	if(empty == true) return pexons;
-
-	build_bins();
-	build_slopes();
-	select_slopes();
-	build_partial_exons();
-	return pexons;
 }
 
 int region::init()
@@ -62,27 +54,22 @@ int region::init()
 		return 0;
 	}
 
-	if(ltype != RIGHT_SPLICE) lcore = lower(lit->first);
-	if(rtype != LEFT_SPLICE) rcore = upper(rit->first);
+	lcore = lower(lit->first);
+	rcore = upper(rit->first);
 	assert(rcore > lcore);
 
 	if(lcore > lpos) ltype = START_BOUNDARY;
 	if(rcore < rpos) rtype = END_BOUNDARY;
 
-	if(ltype == RIGHT_SPLICE || rtype == LEFT_SPLICE) 
-	{
-		empty = false;
-		return 0;
-	}
-
-	empty = true;
+	empty = false;
 	int32_t m = compute_max_overlap(*imap, lit, rit);
 	int32_t s = compute_sum_overlap(*imap, lit, rit);
-	if(m > min_max_region_overlap) empty = false;
-	if(1.0 * s / (rcore - lcore) > min_average_overlap) empty = false;
+	if(m < min_max_region_overlap) empty = true;
+	if(1.0 * s / (rcore - lcore) < min_average_overlap) empty = true;
 
 	return 0;
 }
+
 
 int region::evaluate_rectangle(int ll, int rr, double &ave, double &dev)
 {
@@ -176,390 +163,11 @@ int region::evaluate_triangle(int ll, int rr, double &ave, double &dev)
 	return 0;
 }
 
-double region::compute_deviation(const split_interval_map &sim, const vector<slope> &ss)
-{
-	double var = 0;
-	int len = 0;
-	for(SIMI it = sim.begin(); it != sim.end(); it++)
-	{
-		int l = lower(it->first);
-		int r = upper(it->first);
-		len += (r - l);
-		int w = it->second;
-		if(w <= 0) continue;
-
-		double a, d;
-		evaluate_rectangle(l, r, a, d);
-		var += d * d * (r - l);
-	}
-
-	for(int i = 0; i < ss.size(); i++)
-	{
-		const slope &s = ss[i];
-		var += s.dev * s.dev * (s.rpos - s.lpos);
-		len += (s.rpos - s.lpos);
-	}
-	return sqrt(var / len);
-}
-
-int region::build_bins()
-{
-	bins.clear();
-	if(empty == true) return 0;
-
-	int32_t bsize = slope_bin_size;
-	int bnum = ceil((rcore - lcore) * 1.0 / bsize);
-	bins.resize(bnum, 0.0);
-
-	SIMI lit, rit;
-	tie(lit, rit) = locate_boundary_iterators(*imap, lpos, rpos);
-	for(SIMI it = lit; ; it++)
-	{
-		int o = it->second;
-		int32_t l = lower(it->first);
-		int32_t r = upper(it->first);
-		int bl = (l - lcore) / bsize;
-		int br = (r - 1 - lcore) / bsize;
-
-		assert(r > l);
-		assert(br >= bl);
-		assert(bl >= 0);
-		assert(br < bins.size());
-
-		for(int b = bl; b <= br; b++)
-		{
-			int x = lcore + b * bsize;
-			int y = lcore + (b + 1) * bsize;
-			if(b == bl) x = l;
-			if(b == br) y = r;
-			
-			bins[b] += o * (y - x);
-		}
-		
-		if(it == rit) break;
-	}
-	
-	for(int i = 0; i < bins.size(); i++)
-	{
-		bins[i] = bins[i] / bsize;
-	}
-
-	return 0;
-}
-
-int region::build_slopes()
-{
-	if(bins.size() < slope_min_bin_num) return 0;
-
-	// left part
-	int mbin = slope_min_bin_num / 3;
-	int nbin = slope_std_bin_num / 3;
-
-	int lbin = 0 * mbin;
-	int rbin = 3 * (mbin - 1);
-	int xo = 0;
-	int yo = 0;
-	int zo = 0;
-	int d = 0;
-	for(d = 0; d < mbin - 1; d++)
-	{
-		xo += bins[0 * (mbin - 1) + d];
-		yo += bins[1 * (mbin - 1) + d];
-		zo += bins[2 * (mbin - 1) + d];
-	}
-	assert(d == mbin - 1);
-
-	seeds.clear();
-	for(d = mbin - 1; d < nbin && rbin + 3 <= bins.size(); d++)
-	{
-		xo += bins[lbin + 1 * d + 0];
-		yo -= bins[lbin + 1 * d + 0];
-		yo += bins[lbin + 2 * d + 0];
-		yo += bins[lbin + 2 * d + 1];
-		zo -= bins[lbin + 2 * d + 0];
-		zo -= bins[lbin + 2 * d + 1];
-		zo += bins[lbin + 3 * d + 0];
-		zo += bins[lbin + 3 * d + 1];
-		zo += bins[lbin + 3 * d + 2];
-
-		rbin += 3;
-
-		int xx = xo / average_read_length;
-		int yy = yo / average_read_length;
-		int zz = zo / average_read_length;
-
-		int sxy = compute_binomial_score(xx + yy, 0.5, yy);
-		int syz = compute_binomial_score(yy + zz, 0.5, zz);
-
-		slope s5(SLOPE5END, lbin, rbin, (sxy < syz) ? sxy : syz);
-		if(s5.score > min_slope_score) seeds.push_back(s5);
-
-		int syx = compute_binomial_score(xx + yy, 0.5, xx);
-		int szy = compute_binomial_score(yy + zz, 0.5, yy);
-		slope s3(SLOPE3END, lbin, rbin, (syx < szy) ? syx : szy);
-		if(s3.score > min_slope_score) seeds.push_back(s3);
-	}
-
-	// middle part
-	while(rbin + 1 <= bins.size())
-	{
-		xo -= bins[lbin + 0 * d];
-		xo += bins[lbin + 1 * d];
-		yo -= bins[lbin + 1 * d];
-		yo += bins[lbin + 2 * d];
-		zo -= bins[lbin + 2 * d];
-		zo += bins[lbin + 3 * d];
-
-		lbin++;
-		rbin++;
-
-		int xx = xo / average_read_length;
-		int yy = yo / average_read_length;
-		int zz = zo / average_read_length;
-
-		int sxy = compute_binomial_score(xx + yy, 0.5, yy);
-		int syz = compute_binomial_score(yy + zz, 0.5, zz);
-
-		slope s5(SLOPE5END, lbin, rbin, (sxy < syz) ? sxy : syz);
-		if(s5.score > min_slope_score) seeds.push_back(s5);
-
-		int syx = compute_binomial_score(xx + yy, 0.5, xx);
-		int szy = compute_binomial_score(yy + zz, 0.5, yy);
-		slope s3(SLOPE3END, lbin, rbin, (syx < szy) ? syx : szy);
-		if(s3.score > min_slope_score) seeds.push_back(s3);
-	}
-
-	assert(rbin == bins.size());
-
-	// right part
-	for(; d > mbin; d--) 
-	{
-		xo -= bins[lbin + 0 * d + 0];
-		xo -= bins[lbin + 0 * d + 1];
-		xo -= bins[lbin + 0 * d + 2];
-		xo += bins[lbin + 1 * d + 0];
-		xo += bins[lbin + 1 * d + 1];
-
-		yo -= bins[lbin + 1 * d + 0];
-		yo -= bins[lbin + 1 * d + 1];
-		yo += bins[lbin + 2 * d + 0];
-
-		zo -= bins[lbin + 2 * d + 0];
-
-		lbin += 3;
-
-		int xx = xo / average_read_length;
-		int yy = yo / average_read_length;
-		int zz = zo / average_read_length;
-
-		int sxy = compute_binomial_score(xx + yy, 0.5, yy);
-		int syz = compute_binomial_score(yy + zz, 0.5, zz);
-
-		slope s5(SLOPE5END, lbin, rbin, (sxy < syz) ? sxy : syz);
-		if(s5.score > min_slope_score) seeds.push_back(s5);
-
-		int syx = compute_binomial_score(xx + yy, 0.5, xx);
-		int szy = compute_binomial_score(yy + zz, 0.5, yy);
-		slope s3(SLOPE3END, lbin, rbin, (syx < szy) ? syx : szy);
-		if(s3.score > min_slope_score) seeds.push_back(s3);
-	}
-
-	for(int i = 0; i < seeds.size(); i++)
-	{
-		slope &s = seeds[i];
-		s.lpos = lcore + s.lbin * slope_bin_size;
-
-		if(s.rbin == bins.size()) s.rpos = rcore;
-		else s.rpos = lcore + s.rbin * slope_bin_size;
-
-		if(s.lpos == lcore || s.rpos == rcore) s.flag = SLOPE_MARGIN;
-		else s.flag = SLOPE_MIDDLE;
-
-		double ave, dev;
-		evaluate_triangle(s.lpos, s.rpos, s.ave, s.dev);
-	}
-
-	return 0;
-}
-
-int region::select_slopes()
-{
-	split_interval_map sim;
-	sim += make_pair(ROI(lcore, rcore), 1);
-
-	double dev = compute_deviation(sim, slopes);
-
-	std::sort(seeds.begin(), seeds.end(), compare_slope_score);
-	for(int i = 0; i < seeds.size(); i++)
-	{
-		slope &x = seeds[i];
-		//evaluate_triangle(x.lpos, x.rpos, x.ave, x.dev);	
-
-		bool b = true;
-		for(int k = 0; k < slopes.size(); k++)
-		{
-			slope &y = slopes[k];
-			int d = x.distance(y);
-			if(d <= slope_min_distance) b = false;
-			if(b == false) break;
-		}
-		if(b == false) continue;
-
-		slopes.push_back(x);
-		sim -= make_pair(ROI(x.lpos, x.rpos), 1);
-
-		double d = compute_deviation(sim, slopes);
-
-		if(d <= dev * 0.9)
-		{
-			dev = d;
-		}
-		else
-		{
-			slopes.pop_back();
-			break;
-		}
-	}
-
-	return 0;
-}
-
-int region::build_partial_exons()
-{
-	std::sort(slopes.begin(), slopes.end(), compare_slope_pos);
-
-	int32_t lexon = lcore;
-	int32_t ppos = lcore;
-	double pvar = 0.0;
-	double psum = 0.0;
-	int lltype = ltype;
-	for(int i = 0; i < slopes.size(); i++)
-	{
-		slope &s = slopes[i];
-		if(s.type == SLOPE5END)
-		{
-			int rexon = s.lpos;
-			int rrtype = START_BOUNDARY;
-
-			if(rexon > ppos)
-			{
-				double ave, dev;
-				evaluate_rectangle(ppos, rexon, ave, dev);
-				psum += ave * (rexon - ppos);
-				pvar += dev * dev * (rexon - ppos);
-			}
-
-			if(lexon < rexon)
-			{
-				double ave = psum / (rexon - lexon);
-				double dev = sqrt(pvar / (rexon - lexon));
-				partial_exon pe(lexon, rexon, lltype, rrtype);
-				pe.ave_abd = ave;
-				pe.dev_abd = dev;
-				pexons.push_back(pe);
-			}
-
-			lexon = s.lpos;
-			ppos = s.rpos;
-			lltype = START_BOUNDARY;
-
-			double ave, dev;
-			evaluate_rectangle(s.lpos, s.rpos, ave, dev);
-			psum = ave * (s.rpos - s.lpos);
-			pvar = dev * dev * (s.rpos - s.lpos);
-			//psum = s.ave * (s.rpos - s.lpos);
-			//pvar = s.dev * s.dev * (s.rpos - s.lpos);
-		}
-		else if(s.type == SLOPE3END)
-		{
-			int rexon = s.rpos;
-			int rrtype = END_BOUNDARY;
-
-			if(s.lpos > ppos)
-			{
-				double ave, dev;
-				evaluate_rectangle(ppos, s.lpos, ave, dev);
-				psum += ave * (s.lpos - ppos);
-				pvar += dev * dev * (s.lpos - ppos);
-			}
-
-			double ave, dev;
-			evaluate_rectangle(s.lpos, s.rpos, ave, dev);
-			psum += ave * (s.rpos - s.lpos);
-			pvar += dev * dev * (s.rpos - s.lpos);
-			//psum += s.ave * (s.rpos - s.lpos);
-			//pvar += s.dev * s.dev * (s.rpos - s.lpos);
-
-			assert(lexon < rexon);
-
-			ave = psum / (rexon - lexon);
-			dev = sqrt(pvar / (rexon - lexon));
-			partial_exon pe(lexon, rexon, lltype, rrtype);
-			pe.ave_abd = ave;
-			pe.dev_abd = dev;
-			pexons.push_back(pe);
-
-			lexon = s.rpos;
-			ppos = s.rpos;
-			lltype = END_BOUNDARY;
-			psum = 0;
-			pvar = 0;
-		}
-	}
-
-	int rexon = rcore;
-	int rrtype = rtype;
-
-	if(rexon > ppos)
-	{
-		double ave, dev;
-		//printf("-------------------\n");
-		//printf("rectangle [%d, %d), ave = %.2lf, dev = %.2lf\n", ppos, rexon, ave, dev);
-		//printf("===================\n");
-		evaluate_rectangle(ppos, rexon, ave, dev);
-		psum += ave * (rexon - ppos);
-		pvar += dev * dev * (rexon - ppos);
-	}
-
-	if(lexon < rexon)
-	{
-		double ave = psum / (rexon - lexon);
-		double dev = sqrt(pvar / (rexon - lexon));
-		partial_exon pe(lexon, rexon, lltype, rrtype);
-		pe.ave_abd = ave;
-		pe.dev_abd = dev;
-		pexons.push_back(pe);
-	}
-
-	return 0;
-}
-
 int region::print(int index) const
 {
 	int32_t lc = compute_overlap(*imap, lcore);
 	int32_t rc = compute_overlap(*imap, rcore - 1);
-	printf("region %d: empty = %c, pos = [%d, %d), core = [%d, %d), bins = %lu, coverage = (%d, %d)\n", 
-			index, empty ? 'T' : 'F', lpos, rpos, lcore, rcore, bins.size(), lc, rc);
+	printf("region %d: empty = %c, pos = [%d, %d), core = [%d, %d), coverage = (%d, %d)\n", index, empty ? 'T' : 'F', lpos, rpos, lcore, rcore, lc, rc);
 
-
-	/*
-	for(int i = 0; i < seeds.size(); i++)
-	{
-		seeds[i].print(i);
-	}
-	*/
-	for(int i = 0; i < slopes.size(); i++)
-	{
-		slopes[i].print(i);
-	}
-
-	return 0;
-	for(int i = 0; i < pexons.size(); i++)
-	{
-		pexons[i].print(i);
-	}
-	printf("\n");
 	return 0;
 }
-
-
