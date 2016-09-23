@@ -7,19 +7,24 @@
 
 #include "assembler.h"
 #include "config.h"
+#include "predictor.h"
 
 using namespace std;
 
 int main(int argc, const char **argv)
 {
-	if(argc != 3)
+	if(argc == 3)
 	{
-		cout<<"usage: "<<argv[0]<<" bam-file gtf-file"<<endl;	
-		return 0;
+		assembler asmbl;
+		asmbl.process(argv[1], argv[2]);
 	}
 
-	assembler asmbl;
-	asmbl.process(argv[1], argv[2]);
+	if(argc == 2)
+	{
+		predictor p;
+		p.load(argv[1]);
+		p.write();
+	}
 
     return 0;
 }

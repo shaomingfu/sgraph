@@ -26,6 +26,7 @@ int region::build_block(block &b)
 	b.pos = lcore;
 	b.s.clear();
 	b.q.clear();
+
 	for(int i = lcore; i < rcore; i++)
 	{
 		int32_t w = compute_overlap(*imap, i);
@@ -35,8 +36,10 @@ int region::build_block(block &b)
 		b.s.push_back(w);
 		b.q.push_back(q);
 	}
+
 	if(ltype == START_BOUNDARY) b.ltype = true;
 	else b.ltype = false;
+
 	if(rtype == END_BOUNDARY) b.rtype = true;
 	else b.rtype = false;
 

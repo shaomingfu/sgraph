@@ -18,6 +18,7 @@ uint32_t min_max_splice_boundary_qual = 3;
 double min_average_overlap = 2;
 int min_max_region_overlap = 5;
 int min_sample_length = 100;
+double min_transcript_expression = 10.0;
 
 int parse_arguments(int argc, const char ** argv)
 {

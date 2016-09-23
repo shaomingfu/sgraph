@@ -34,6 +34,7 @@ extern uint32_t min_max_splice_boundary_qual;
 extern double min_average_overlap;
 extern int min_max_region_overlap;
 extern int min_sample_length;
+extern double min_transcript_expression;
 
 // load and parse
 int load_config(const char * conf_file);

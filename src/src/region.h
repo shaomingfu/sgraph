@@ -5,6 +5,7 @@
 #include <vector>
 #include "interval_map.h"
 #include "block.h"
+#include "binomial.h"
 
 using namespace std;
 

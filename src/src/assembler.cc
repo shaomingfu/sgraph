@@ -19,7 +19,7 @@ int assembler::process(const string &bam_file, const string &gtf_file)
 {
 	build_boundary_positions(gtf_file);
 	process_bam(bam_file);
-	print();
+	//print();
 	return 0;
 }
 
@@ -59,6 +59,7 @@ int assembler::build_boundary_positions(const string &file)
 			transcript &t = g.transcripts[k];
 			PI32 p = t.get_bounds();
 			if(p.first < 0 || p.second < 0) continue;
+			if(t.expression < min_transcript_expression) continue;
 
 			if(mss.find(chrm) == mss.end())
 			{
@@ -158,7 +159,9 @@ int assembler::process_bundle(bundle_base &bb, bam_hdr_t *h)
 	for(int i = 0; i < bd.blocks.size(); i++)
 	{
 		block &b = bd.blocks[i];
-		b.build_samples(ss1, ss2);
+		b.build_labels(ss1, ss2);
+		//b.build_samples(ss1, ss2);
+		b.predict();
 	}
 
 	bb.clear();
