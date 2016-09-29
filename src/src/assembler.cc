@@ -160,8 +160,8 @@ int assembler::process_bundle(bundle_base &bb, bam_hdr_t *h)
 	{
 		block &b = bd.blocks[i];
 		b.build_labels(ss1, ss2);
-		//b.build_samples(ss1, ss2);
-		b.predict();
+		b.build_features();
+		b.write_samples();
 	}
 
 	bb.clear();

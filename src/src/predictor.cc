@@ -5,7 +5,7 @@
 #include <cstdio>
 #include <string>
 
-int predictor::load(const string &file)
+int predictor::process(const string &file)
 {
 	ifstream fin(file.c_str());
 	if(fin.fail()) return -1;
@@ -19,7 +19,7 @@ int predictor::load(const string &file)
 	{
 		if(line[0] != '#') continue;
 
-		printf("%s\n", line.c_str());
+		//printf("%s\n", line.c_str());
 
 		block b;
 		b.index = ++index;
@@ -27,88 +27,87 @@ int predictor::load(const string &file)
 
 		// labels
 		getline(fin, line);
+		sstr.clear();
 		sstr<<line.c_str();
-		while(sstr>>k)
-		{
-			printf("push back label %d\n", k);
-			b.labels.push_back(k);
-		}
+		while(sstr>>k) b.labels.push_back(k);
 
 		// abundance
 		getline(fin, line);
+		sstr.clear();
 		sstr<<line.c_str();
-		while(sstr>>k)
-		{
-			printf("push back s %d\n", k);
-			b.s.push_back(k);
-		}
+		while(sstr>>k) b.s.push_back(k);
 
 		// for average quality
 		getline(fin, line);
+		sstr.clear();
 		sstr<<line.c_str();
 		while(sstr>>f) b.q.push_back(f);
 
 		// for windows 20
 		getline(fin, line);
+		sstr.clear();
 		sstr<<line.c_str();
 		while(sstr>>k) b.fs20.sa.push_back(k);
 
 		getline(fin, line);
+		sstr.clear();
 		sstr<<line.c_str();
 		while(sstr>>k) b.fs20.sb.push_back(k);
 
 		getline(fin, line);
+		sstr.clear();
 		sstr<<line.c_str();
 		while(sstr>>f) b.fs20.va.push_back(f);
 
 		getline(fin, line);
+		sstr.clear();
 		sstr<<line.c_str();
 		while(sstr>>f) b.fs20.vb.push_back(f);
 
 		// for windows 50
 		getline(fin, line);
+		sstr.clear();
 		sstr<<line.c_str();
 		while(sstr>>k) b.fs50.sa.push_back(k);
 
 		getline(fin, line);
+		sstr.clear();
 		sstr<<line.c_str();
 		while(sstr>>k) b.fs50.sb.push_back(k);
 
 		getline(fin, line);
+		sstr.clear();
 		sstr<<line.c_str();
 		while(sstr>>f) b.fs50.va.push_back(f);
 
 		getline(fin, line);
+		sstr.clear();
 		sstr<<line.c_str();
 		while(sstr>>f) b.fs50.vb.push_back(f);
 
 		// for windows 100
 		getline(fin, line);
+		sstr.clear();
 		sstr<<line.c_str();
 		while(sstr>>k) b.fs100.sa.push_back(k);
 
 		getline(fin, line);
+		sstr.clear();
 		sstr<<line.c_str();
 		while(sstr>>k) b.fs100.sb.push_back(k);
 
 		getline(fin, line);
+		sstr.clear();
 		sstr<<line.c_str();
 		while(sstr>>f) b.fs100.va.push_back(f);
 
 		getline(fin, line);
+		sstr.clear();
 		sstr<<line.c_str();
 		while(sstr>>f) b.fs100.vb.push_back(f);
 
-		blocks.push_back(b);
+		b.predict();
 	}
 	return 0;
 }
 
-int predictor::write()
-{
-	for(int i = 0; i < blocks.size(); i++) 
-	{
-		blocks[i].write_samples();
-	}
-	return 0;
-}

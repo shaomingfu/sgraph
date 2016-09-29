@@ -21,7 +21,8 @@ int block::predict()
 	if(rtype == true) return 0;
 
 	block::index++;
-	printf("# sample-id = %d, length = %lu, location = %s:%d-%lu\n", block::index, s.size(), chrm.c_str(), pos, pos + s.size());
+	//printf("# sample-id = %d, length = %lu, location = %s:%d-%lu\n", block::index, s.size(), chrm.c_str(), pos, pos + s.size());
+	printf("#-> %lu\n", s.size());
 
 	for(int i = 0; i < s.size(); i++)
 	{
@@ -47,8 +48,33 @@ int block::predict()
 		double pp1 = p1 / (p1 + p2) * (1 - pp3);
 		double pp2 = p2 / (p1 + p2) * (1 - pp3);
 
+		/*
 		printf("index = %d, label = %d, counts = (%d, %d), score = (%d, %d), pr = (%.5lf, %.5lf, %.5lf)\n", 
 				index, labels[i], n1, n2, s1, s2, pp1, pp2, pp3);
+		*/
+
+		double pp = -1;
+		int l1 = -1;
+
+		if(pp1 >= pp2 && pp1 >= pp3)
+		{
+			l1 = 0;
+			pp = pp1;
+		}
+		else if(pp2 >= pp3)
+		{
+			l1 = 2;
+			pp = pp2;
+		}
+		else
+		{
+			l1 = 1;
+			pp = pp3;
+		}
+
+		int l0 = (labels[i] == 0) ? 1 : (labels[i] == 1 ? 2 : 0);
+
+		printf("%d -> %.6lf %.6lf %.6lf -> %.6lf %d\n", l0, pp1, pp3, pp2, pp, l1);
 	}
 
 	return 0;

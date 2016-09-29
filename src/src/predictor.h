@@ -9,12 +9,7 @@ using namespace std;
 class predictor
 {
 public:
-	vector<block> blocks;
-
-public:
-	int load(const string &file);
-	int predict();
-	int write();
+	int process(const string &file);
 };
 
 #endif

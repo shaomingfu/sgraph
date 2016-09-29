@@ -22,8 +22,7 @@ int main(int argc, const char **argv)
 	if(argc == 2)
 	{
 		predictor p;
-		p.load(argv[1]);
-		p.write();
+		p.process(argv[1]);
 	}
 
     return 0;
