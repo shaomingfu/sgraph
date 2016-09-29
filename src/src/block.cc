@@ -16,7 +16,6 @@ int block::clear()
 
 int block::predict()
 {
-	// TODO
 	if(ltype == true) return 0;
 	if(rtype == true) return 0;
 
@@ -82,7 +81,6 @@ int block::predict()
 
 int block::predict0()
 {
-	// TODO
 	if(ltype == true) return 0;
 	if(rtype == true) return 0;
 
@@ -121,7 +119,13 @@ int block::evaluate(int a, int b, double &ave, double &dev)
 	if(a >= b) return 0;
 
 	double sum = 0;
-	for(int i = a; i < b; i++) sum += s[i];
+	for(int i = a; i < b; i++)
+	{
+		//printf("a = %d, b = %d, i = %d, s.size() = %lu\n", a, b, i, s.size());
+		assert(i >= 0 && i < s.size());
+		sum += s[i];
+	}
+
 	ave = sum / (b - a);
 
 	double var = 0;
@@ -152,6 +156,8 @@ int block::build_feature_score(fscore &fs)
 
 int block::build_labels(const set<int32_t> &ss, const set<int32_t> &tt)
 {
+	if(s.size() < min_sample_length) return 0;
+
 	labels.clear();
 	for(int i = 0; i < s.size(); i++)
 	{
@@ -168,6 +174,8 @@ int block::build_labels(const set<int32_t> &ss, const set<int32_t> &tt)
 
 int block::build_features()
 {
+	if(s.size() < min_sample_length) return 0;
+
 	fs20.w = 20;
 	fs50.w = 50;
 	fs100.w = 100;
