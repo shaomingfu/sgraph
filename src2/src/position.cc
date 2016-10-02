@@ -4,7 +4,7 @@
 
 position::position(const string &s)
 {
-	char line[1024];
+	char line[1024000];
 	stringstream sstr(s);
 	sstr >> label >> line;
 	sstr >> px >> py >> pz >> line;
