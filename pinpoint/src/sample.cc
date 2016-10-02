@@ -98,7 +98,7 @@ int sample::align_blocks(int ff, vector<block> &blocks, int &ncorrect, int &nlab
 	for(int i = 0; i < blocks.size(); i++)
 	{
 		block &b = blocks[i];
-		vv.push_back(PI(b.pos, i));
+		vv.push_back(PI(b.pos + block_size / 2, i));
 	}
 
 	sort(vv.begin(), vv.end());
