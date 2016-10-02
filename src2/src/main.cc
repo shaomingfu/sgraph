@@ -57,9 +57,8 @@ int main(int argc, const char ** argv)
 		}
 	}
 
-	printf("summary: label0 = %d / %d / %d, label2 = %d / %d / %d  (corrrect / prediction / label)\n", 
-			correct0, pred0, label0,
-			correct2, pred2, label2);
+	printf("summary label0 = %d / %d / %d (corrrect / prediction / label), sensitivity = %.3lf, precision = %.3lf\n", correct0, pred0, label0, correct0 * 1.0 / label0, correct0 * 1.0 / pred0);
+	printf("summary label2 = %d / %d / %d (corrrect / prediction / label), sensitivity = %.3lf, precision = %.3lf\n", correct2, pred2, label2, correct2 * 1.0 / label2, correct2 * 1.0 / pred2);
 
 	fin.close();
 	return 0;
