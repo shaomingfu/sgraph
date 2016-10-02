@@ -42,7 +42,7 @@ int sample::build_blocks(int ff, vector<block> &blocks)
 	for(int i = 0; i < block_size; i++)
 	{
 		position &p = positions[i];
-		pr += p.pp;
+		pr += p.xyz[ff];
 		if(p.pred == ff) cnt++;
 	}
 
@@ -50,15 +50,15 @@ int sample::build_blocks(int ff, vector<block> &blocks)
 	{
 		position &p1 = positions[i];
 		position &p2 = positions[i + block_size];
-		pr += p2.pp;
-		pr -= p1.pp;
+		pr += p2.xyz[ff];
+		pr -= p1.xyz[ff];
 		if(p2.pred == ff) cnt++;
 		if(p1.pred == ff) cnt--;
 		assert(cnt <= block_size);
 
 		double ave = pr * 1.0 / block_size;
-		if(cnt < block_size) continue;
 		if(ave < min_prob) continue;
+		//if(cnt < block_size) continue;
 
 		blocks.push_back(block(i, ave));
 	}

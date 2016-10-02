@@ -10,13 +10,15 @@ using namespace std;
 
 int main(int argc, const char ** argv)
 {
-	if(argc != 3) 
+	if(argc != 5) 
 	{
-		printf("usage: %s: <prediction-file> <probability-threshold>\n", argv[0]);
+		printf("usage: %s: <prediction-file> <probability-threshold> <half-window-size-for-average> <half-window-size-for-correct>\n", argv[0]);
 		return 0;
 	}
 
 	min_prob = atof(argv[2]);
+	block_size = 2 * atoi(argv[3]);
+	max_correct_distance = 2 * atoi(argv[4]);
 
 	ifstream fin(argv[1]);
 	if(fin.fail()) return 0;

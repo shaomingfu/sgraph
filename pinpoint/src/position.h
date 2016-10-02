@@ -13,9 +13,7 @@ public:
 
 public:
 	int label;
-	double px;
-	double py;
-	double pz;
+	double xyz[3];
 	double pp;
 	int pred;
 
