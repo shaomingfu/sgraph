@@ -16,9 +16,10 @@ int sample::clear()
 {
 	positions.clear();
 	blocks0.clear();
+	blocks1.clear();
 	blocks2.clear();
-	correct0 = correct2 = 0;
-	label0 = label2 = 0;
+	correct0 = correct1 = correct2 = 0;
+	label0 = label1 = label2 = 0;
 	return 0;
 }
 
@@ -28,7 +29,37 @@ int sample::process()
 	build_blocks(2, blocks2);
 	align_blocks(0, blocks0, correct0, label0);
 	align_blocks(2, blocks2, correct2, label2);
+	predict0 = blocks0.size();
+	predict2 = blocks2.size();
+	build_blocks1();
 	print();
+	return 0;
+}
+
+int sample::build_blocks1()
+{
+	blocks1.assign(positions.size(), 1);
+	for(int i = 0; i < positions.size(); i++)
+	{
+		double pr = positions[i].xyz[1];
+		if(pr >= min_prob) continue;
+		int k1 = i - block_size / 2;
+		int k2 = i + block_size / 2;
+		if(k1 <= 0) k1 = 0;
+		if(k2 >= positions.size() - 1) k2 = positions.size() - 1;
+		for(int k = k1; k < k2; k++) blocks1[k] = 0;
+	}
+
+	correct1 = 0;
+	predict1 = 0;
+	label1 = 0;
+
+	for(int i = 0; i < positions.size(); i++)
+	{
+		if(positions[i].label == 1) label1++;
+		if(blocks1[i] == 1) predict1++;
+		if(positions[i].label == 1 && blocks1[i] == 1) correct1++;
+	}
 	return 0;
 }
 
@@ -134,9 +165,11 @@ int sample::align_blocks(int ff, vector<block> &blocks, int &ncorrect, int &nlab
 
 int sample::print()
 {
-	printf("positions = %lu, label0 = %d / %lu / %d, label2 = %d / %lu / %d\n", positions.size(), 
-			correct0, blocks0.size(), label0, 
-			correct2, blocks2.size(), label2); 
+	printf("positions = %lu, label0 = %d / %d / %d, label2 = %d / %d / %d, label1 = %d / %d / %d\n", 
+			positions.size(), 
+			correct0, predict0, label0, 
+			correct2, predict2, label2, 
+			correct1, predict1, label1);
 
 	return 0;
 
