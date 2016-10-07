@@ -5,26 +5,23 @@
 #include <string>
 #include <set>
 
+#include "gtf.h"
 #include "block.h"
 #include "bundle_base.h"
 
 using namespace std;
 
-typedef pair< string, set<int32_t> > PSSI;
-typedef map< string, set<int32_t> > MSSI;
-
 class assembler
 {
 public:
-	assembler();
+	assembler(const string &gtf_file);
 	~assembler();
 
 public:
-	MSSI mss;
-	MSSI mtt;
+	gtf gf;
 
 public:
-	int process(const string &bam_file, const string &gtf_file);
+	int process(const string &bam_file);
 
 protected:
 	int build_boundary_positions(const string &file);

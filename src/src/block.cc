@@ -172,6 +172,22 @@ int block::build_labels(const set<int32_t> &ss, const set<int32_t> &tt)
 	return 0;
 }
 
+int block::build_abundance(const join_interval_map &jmap)
+{
+	if(s.size() < min_sample_length) return 0;
+
+	abd.clear();
+	for(int i = 0; i < s.size(); i++)
+	{
+		int32_t p = i + pos;
+		JIMI it = jmap.find(p);
+		if(it == jmap.end()) abd.push_back(0);
+		else abd.push_back(it->second);
+	}
+	return 0;
+}
+
+
 int block::build_features()
 {
 	if(s.size() < min_sample_length) return 0;
@@ -207,6 +223,9 @@ int block::write_samples()
 	fs20.write();
 	fs50.write();
 	fs100.write();
+
+	// print abundance
+	for(int i = 0; i < abd.size(); i++) printf("%d ", abd[i]); printf("\n");
 
 	return 0;
 }

@@ -7,7 +7,8 @@
 #include "bundle.h"
 #include "genome.h"
 
-assembler::assembler()
+assembler::assembler(const string &file)
+	: gf(file)
 {
 }
 
@@ -15,17 +16,15 @@ assembler::~assembler()
 {
 }
 
-int assembler::process(const string &bam_file, const string &gtf_file)
+int assembler::process(const string &bam_file)
 {
-	build_boundary_positions(gtf_file);
 	process_bam(bam_file);
-	//print();
 	return 0;
 }
 
 int assembler::print()
 {
-	for(MSSI::iterator it = mss.begin(); it != mss.end(); it++)
+	for(MSSI::iterator it = gf.mss.begin(); it != gf.mss.end(); it++)
 	{
 		set<int32_t> &s = it->second;
 		for(set<int32_t>::iterator i = s.begin(); i != s.end(); i++)
@@ -33,7 +32,7 @@ int assembler::print()
 			printf("left %s %d\n", it->first.c_str(), *i);
 		}
 	}
-	for(MSSI::iterator it = mtt.begin(); it != mtt.end(); it++)
+	for(MSSI::iterator it = gf.mtt.begin(); it != gf.mtt.end(); it++)
 	{
 		set<int32_t> &s = it->second;
 		for(set<int32_t>::iterator i = s.begin(); i != s.end(); i++)
@@ -44,49 +43,6 @@ int assembler::print()
 	return 0;
 }
 
-int assembler::build_boundary_positions(const string &file)
-{
-	genome gm(file);
-	mss.clear();
-	mtt.clear();
-
-	for(int i = 0; i < gm.genes.size(); i++)
-	{
-		gene &g = gm.genes[i];
-		string chrm = g.get_seqname();
-		for(int k = 0; k < g.transcripts.size(); k++)
-		{
-			transcript &t = g.transcripts[k];
-			PI32 p = t.get_bounds();
-			if(p.first < 0 || p.second < 0) continue;
-			if(t.expression < min_transcript_expression) continue;
-
-			if(mss.find(chrm) == mss.end())
-			{
-				set<int32_t> s;
-				s.insert(p.first);
-				mss.insert(PSSI(chrm, s));
-			}
-			else
-			{
-				mss[chrm].insert(p.first);
-			}
-
-			if(mtt.find(chrm) == mtt.end())
-			{
-				set<int32_t> s;
-				s.insert(p.second);
-				mtt.insert(PSSI(chrm, s));
-			}
-			else
-			{
-				mtt[chrm].insert(p.second);
-			}
-		}
-	}
-
-	return 0;
-}
 
 int assembler::process_bam(const string &file)
 {
@@ -149,17 +105,21 @@ int assembler::process_bundle(bundle_base &bb, bam_hdr_t *h)
 
 	set<int32_t> s1;
 	set<int32_t> s2;
+	join_interval_map jmap0;
 
 	set<int32_t> &ss1 = s1;
 	set<int32_t> &ss2 = s2;
+	join_interval_map &jmap = jmap0;
 
-	if(mss.find(chrm) != mss.end()) ss1 = mss[chrm];
-	if(mtt.find(chrm) != mtt.end()) ss2 = mtt[chrm];
+	if(gf.mss.find(chrm) != gf.mss.end()) ss1 = gf.mss[chrm];
+	if(gf.mtt.find(chrm) != gf.mtt.end()) ss2 = gf.mtt[chrm];
+	if(gf.jmap.find(chrm) != gf.jmap.end()) jmap = gf.jmap[chrm];
 
 	for(int i = 0; i < bd.blocks.size(); i++)
 	{
 		block &b = bd.blocks[i];
 		b.build_labels(ss1, ss2);
+		b.build_abundance(jmap);
 		b.build_features();
 		b.write_samples();
 	}
