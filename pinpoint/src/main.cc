@@ -12,7 +12,7 @@ int main(int argc, const char ** argv)
 {
 	if(argc != 7) 
 	{
-		printf("usage: %s: <prediction-file> <probability-threshold (for 0 and 2)> <half-window-size-for-average (for 0 and 2)> <half-window-size-for-correct (for 0 and 2)> <probability-threshold (for 1)> <half-window-size-for-average (for 1)> \n", argv[0]);
+		printf("usage: %s: <prediction-file> <probability-threshold (for 0 and 2)> <half-window-size-for-average (for 0 and 2)> <half-window-size-for-correct (for 0 and 2)> <probability-threshold (for 1)> <half-window-size-for-computing-MIN (for 1)> \n", argv[0]);
 		return 0;
 	}
 
