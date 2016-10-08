@@ -202,7 +202,7 @@ int block::build_features()
 	return 0;
 }
 
-int block::write_samples()
+int block::write_samples(ofstream &fout)
 {
 	assert(s.size() == q.size());
 	if(s.size() < min_sample_length) return 0;
@@ -212,20 +212,58 @@ int block::write_samples()
 	if(rtype == true) return 0;
 
 	block::index++;
-	printf("# sample-id = %d, length = %lu, location = %s:%d-%lu\n", block::index, s.size(), chrm.c_str(), pos, pos + s.size());
+	//printf("# sample-id = %d, length = %lu, location = %s:%d-%lu\n", block::index, s.size(), chrm.c_str(), pos, pos + s.size());
+
+	fout << setiosflags(ios::fixed) << setprecision(3);
+	fout << "# sample-id = " << block::index <<", length = " << s.size();
+	fout << ", location = " << chrm.c_str() << ":" << pos << "-" << pos + s.size() << "\n";
 
 	// print label
-	for(int i = 0; i < labels.size(); i++) printf("%d ", labels[i]); printf("\n");
+	for(int i = 0; i < labels.size(); i++)  fout << labels[i] <<" "; fout << "\n";
 
 	// print features
-	for(int i = 0; i < s.size(); i++) printf("%d ", s[i]); printf("\n");
-	for(int i = 0; i < q.size(); i++) printf("%.0lf ", q[i]); printf("\n");
-	fs20.write();
-	fs50.write();
-	fs100.write();
+	for(int i = 0; i < s.size(); i++) fout<< s[i] << " "; fout<<"\n";
+	for(int i = 0; i < q.size(); i++) fout<< q[i] << " "; fout<<"\n";
+
+	fs20.write(fout);
+	fs50.write(fout);
+	fs100.write(fout);
 
 	// print abundance
-	for(int i = 0; i < abd.size(); i++) printf("%d ", abd[i]); printf("\n");
+	//for(int i = 0; i < abd.size(); i++) printf("%d ", abd[i]); printf("\n");
+
+	return 0;
+}
+
+int block::write_abundance(ofstream &fout)
+{
+	assert(s.size() == q.size());
+	if(s.size() < min_sample_length) return 0;
+
+	// TODO
+	if(ltype == true) return 0;
+	if(rtype == true) return 0;
+
+	block::index++;
+	//printf("# sample-id = %d, length = %lu, location = %s:%d-%lu\n", block::index, s.size(), chrm.c_str(), pos, pos + s.size());
+
+	fout << setiosflags(ios::fixed) << setprecision(3);
+	fout << "# sample-id = " << block::index <<", length = " << s.size();
+	fout << ", location = " << chrm.c_str() << ":" << pos << "-" << pos + s.size() << "\n";
+
+	// print label
+	for(int i = 0; i < labels.size(); i++)  fout << labels[i] <<" "; fout << "\n";
+
+	// print features
+	for(int i = 0; i < s.size(); i++) fout<< s[i] << " "; fout<<"\n";
+
+	//for(int i = 0; i < q.size(); i++) fout<< q[i] << " "; fout<<"\n";
+	//fs20.write(fout);
+	//fs50.write(fout);
+	//fs100.write(fout);
+
+	// print abundance
+	for(int i = 0; i < abd.size(); i++) fout<< abd[i] << " "; fout<<"\n";
 
 	return 0;
 }

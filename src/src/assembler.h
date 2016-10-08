@@ -4,6 +4,7 @@
 #include <fstream>
 #include <string>
 #include <set>
+#include <fstream>
 
 #include "gtf.h"
 #include "block.h"
@@ -19,14 +20,13 @@ public:
 
 public:
 	gtf gf;
+	ofstream sample_fout;
+	ofstream abundance_fout;
 
 public:
-	int process(const string &bam_file);
-
-protected:
 	int build_boundary_positions(const string &file);
-	int process_bam(const string &file);
 	int process_bundle(bundle_base &bb, bam_hdr_t *h);
+	int process(const string &file, const string &sample_file, const string &abundance_file);
 	int print();
 };
 

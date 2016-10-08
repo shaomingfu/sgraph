@@ -16,12 +16,6 @@ assembler::~assembler()
 {
 }
 
-int assembler::process(const string &bam_file)
-{
-	process_bam(bam_file);
-	return 0;
-}
-
 int assembler::print()
 {
 	for(MSSI::iterator it = gf.mss.begin(); it != gf.mss.end(); it++)
@@ -44,11 +38,14 @@ int assembler::print()
 }
 
 
-int assembler::process_bam(const string &file)
+int assembler::process(const string &file, const string &sample_file, const string &abundance_file)
 {
     samFile *fn = sam_open(file.c_str(), "r");
     bam_hdr_t *h= sam_hdr_read(fn);
     bam1_t *b = bam_init1();
+
+	sample_fout.open(sample_file.c_str());
+	abundance_fout.open(abundance_file.c_str());
 
 	bundle_base bb1;		// for + reads
 	bundle_base bb2;		// for - reads
@@ -81,6 +78,9 @@ int assembler::process_bam(const string &file)
     bam_destroy1(b);
     bam_hdr_destroy(h);
     sam_close(fn);
+
+	sample_fout.close();
+	abundance_fout.close();
 
 	return 0;
 }
@@ -121,7 +121,8 @@ int assembler::process_bundle(bundle_base &bb, bam_hdr_t *h)
 		b.build_labels(ss1, ss2);
 		b.build_abundance(jmap);
 		b.build_features();
-		b.write_samples();
+		b.write_samples(sample_fout);
+		b.write_abundance(abundance_fout);
 	}
 
 	bb.clear();

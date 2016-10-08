@@ -13,10 +13,10 @@ using namespace std;
 
 int main(int argc, const char **argv)
 {
-	if(argc == 3)
+	if(argc == 5)
 	{
 		assembler asmbl(argv[2]);
-		asmbl.process(argv[1]);
+		asmbl.process(argv[1], argv[3], argv[4]);
 	}
 
 	if(argc == 2)
