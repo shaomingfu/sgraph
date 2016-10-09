@@ -4,32 +4,29 @@
 #include <fstream>
 #include <string>
 #include <set>
+#include <fstream>
 
+#include "gtf.h"
 #include "block.h"
 #include "bundle_base.h"
 
 using namespace std;
 
-typedef pair< string, set<int32_t> > PSSI;
-typedef map< string, set<int32_t> > MSSI;
-
 class assembler
 {
 public:
-	assembler();
+	assembler(const string &gtf_file);
 	~assembler();
 
 public:
-	MSSI mss;
-	MSSI mtt;
+	gtf gf;
+	ofstream sample_fout;
+	ofstream abundance_fout;
 
 public:
-	int process(const string &bam_file, const string &gtf_file);
-
-protected:
 	int build_boundary_positions(const string &file);
-	int process_bam(const string &file);
 	int process_bundle(bundle_base &bb, bam_hdr_t *h);
+	int process(const string &file, const string &sample_file, const string &abundance_file);
 	int print();
 };
 

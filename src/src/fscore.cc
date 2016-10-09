@@ -1,5 +1,6 @@
 #include "fscore.h"
 #include <cstdio>
+#include <iomanip>
 
 int fscore::init(int k)
 {
@@ -10,11 +11,12 @@ int fscore::init(int k)
 	return 0;
 }
 
-int fscore::write()
+int fscore::write(ofstream &fout)
 {
-	for(int i = 0; i < sa.size(); i++) printf("%d ", sa[i]); printf("\n");
-	for(int i = 0; i < sb.size(); i++) printf("%d ", sb[i]); printf("\n");
-	for(int i = 0; i < va.size(); i++) printf("%.2lf ", va[i]); printf("\n");
-	for(int i = 0; i < vb.size(); i++) printf("%.2lf ", vb[i]); printf("\n");
+	fout << setiosflags(ios::fixed) << setprecision(3);
+	for(int i = 0; i < sa.size(); i++) fout << sa[i] << " "; printf("\n");
+	for(int i = 0; i < sb.size(); i++) fout << sb[i] << " "; printf("\n");
+	for(int i = 0; i < va.size(); i++) fout << va[i] << " "; printf("\n");
+	for(int i = 0; i < vb.size(); i++) fout << vb[i] << " "; printf("\n");
 	return 0;
 }

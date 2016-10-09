@@ -6,6 +6,7 @@
 #include <set>
 
 #include "fscore.h"
+#include "interval_map.h"
 
 using namespace std;
 
@@ -19,6 +20,7 @@ public:
 	bool rtype;
 
 	vector<int> labels;	// labels
+	vector<int> abd;	// real abundance
 
 	// features
 	vector<int> s;		// abundance
@@ -38,9 +40,11 @@ public:
 	int predict0();
 	int evaluate(int a, int b, double &ave, double &dev);
 	int build_labels(const set<int32_t> &ss, const set<int32_t> &tt);
+	int build_abundance(const join_interval_map &jmap);
 	int build_feature_score(fscore &fs);
 	int build_features();
-	int write_samples();
+	int write_samples(ofstream &fout);
+	int write_abundance(ofstream &fout);
 };
 
 #endif

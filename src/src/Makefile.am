@@ -21,5 +21,6 @@ sgraph_SOURCES = interval_map.h interval_map.cc \
 				 bundle.h bundle.cc \
 				 assembler.h assembler.cc \
 				 predictor.h predictor.cc \
+				 gtf.h gtf.cc \
 				 main.cc
 

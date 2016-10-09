@@ -2,6 +2,7 @@
 #define __FSCORE_H__
 
 #include <vector>
+#include <fstream>
 
 using namespace std;
 
@@ -16,7 +17,7 @@ public:
 
 public:
 	int init(int k);
-	int write();
+	int write(ofstream &fout);
 };
 
 #endif

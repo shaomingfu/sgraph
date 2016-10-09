@@ -16,7 +16,6 @@ int block::clear()
 
 int block::predict()
 {
-	// TODO
 	if(ltype == true) return 0;
 	if(rtype == true) return 0;
 
@@ -82,7 +81,6 @@ int block::predict()
 
 int block::predict0()
 {
-	// TODO
 	if(ltype == true) return 0;
 	if(rtype == true) return 0;
 
@@ -121,7 +119,13 @@ int block::evaluate(int a, int b, double &ave, double &dev)
 	if(a >= b) return 0;
 
 	double sum = 0;
-	for(int i = a; i < b; i++) sum += s[i];
+	for(int i = a; i < b; i++)
+	{
+		//printf("a = %d, b = %d, i = %d, s.size() = %lu\n", a, b, i, s.size());
+		assert(i >= 0 && i < s.size());
+		sum += s[i];
+	}
+
 	ave = sum / (b - a);
 
 	double var = 0;
@@ -152,6 +156,8 @@ int block::build_feature_score(fscore &fs)
 
 int block::build_labels(const set<int32_t> &ss, const set<int32_t> &tt)
 {
+	if(s.size() < min_sample_length) return 0;
+
 	labels.clear();
 	for(int i = 0; i < s.size(); i++)
 	{
@@ -166,8 +172,26 @@ int block::build_labels(const set<int32_t> &ss, const set<int32_t> &tt)
 	return 0;
 }
 
+int block::build_abundance(const join_interval_map &jmap)
+{
+	if(s.size() < min_sample_length) return 0;
+
+	abd.clear();
+	for(int i = 0; i < s.size(); i++)
+	{
+		int32_t p = i + pos;
+		JIMI it = jmap.find(p);
+		if(it == jmap.end()) abd.push_back(0);
+		else abd.push_back(it->second);
+	}
+	return 0;
+}
+
+
 int block::build_features()
 {
+	if(s.size() < min_sample_length) return 0;
+
 	fs20.w = 20;
 	fs50.w = 50;
 	fs100.w = 100;
@@ -178,7 +202,7 @@ int block::build_features()
 	return 0;
 }
 
-int block::write_samples()
+int block::write_samples(ofstream &fout)
 {
 	assert(s.size() == q.size());
 	if(s.size() < min_sample_length) return 0;
@@ -188,17 +212,58 @@ int block::write_samples()
 	if(rtype == true) return 0;
 
 	block::index++;
-	printf("# sample-id = %d, length = %lu, location = %s:%d-%lu\n", block::index, s.size(), chrm.c_str(), pos, pos + s.size());
+	//printf("# sample-id = %d, length = %lu, location = %s:%d-%lu\n", block::index, s.size(), chrm.c_str(), pos, pos + s.size());
+
+	fout << setiosflags(ios::fixed) << setprecision(3);
+	fout << "# sample-id = " << block::index <<", length = " << s.size();
+	fout << ", location = " << chrm.c_str() << ":" << pos << "-" << pos + s.size() << "\n";
 
 	// print label
-	for(int i = 0; i < labels.size(); i++) printf("%d ", labels[i]); printf("\n");
+	for(int i = 0; i < labels.size(); i++)  fout << labels[i] <<" "; fout << "\n";
 
 	// print features
-	for(int i = 0; i < s.size(); i++) printf("%d ", s[i]); printf("\n");
-	for(int i = 0; i < q.size(); i++) printf("%.0lf ", q[i]); printf("\n");
-	fs20.write();
-	fs50.write();
-	fs100.write();
+	for(int i = 0; i < s.size(); i++) fout<< s[i] << " "; fout<<"\n";
+	for(int i = 0; i < q.size(); i++) fout<< q[i] << " "; fout<<"\n";
+
+	fs20.write(fout);
+	fs50.write(fout);
+	fs100.write(fout);
+
+	// print abundance
+	//for(int i = 0; i < abd.size(); i++) printf("%d ", abd[i]); printf("\n");
+
+	return 0;
+}
+
+int block::write_abundance(ofstream &fout)
+{
+	assert(s.size() == q.size());
+	if(s.size() < min_sample_length) return 0;
+
+	// TODO
+	if(ltype == true) return 0;
+	if(rtype == true) return 0;
+
+	block::index++;
+	//printf("# sample-id = %d, length = %lu, location = %s:%d-%lu\n", block::index, s.size(), chrm.c_str(), pos, pos + s.size());
+
+	fout << setiosflags(ios::fixed) << setprecision(3);
+	fout << "# sample-id = " << block::index <<", length = " << s.size();
+	fout << ", location = " << chrm.c_str() << ":" << pos << "-" << pos + s.size() << "\n";
+
+	// print label
+	for(int i = 0; i < labels.size(); i++)  fout << labels[i] <<" "; fout << "\n";
+
+	// print features
+	for(int i = 0; i < s.size(); i++) fout<< s[i] << " "; fout<<"\n";
+
+	//for(int i = 0; i < q.size(); i++) fout<< q[i] << " "; fout<<"\n";
+	//fs20.write(fout);
+	//fs50.write(fout);
+	//fs100.write(fout);
+
+	// print abundance
+	for(int i = 0; i < abd.size(); i++) fout<< abd[i] << " "; fout<<"\n";
 
 	return 0;
 }
