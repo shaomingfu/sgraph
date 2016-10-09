@@ -14,9 +14,9 @@ int fscore::init(int k)
 int fscore::write(ofstream &fout)
 {
 	fout << setiosflags(ios::fixed) << setprecision(3);
-	for(int i = 0; i < sa.size(); i++) fout << sa[i] << " "; printf("\n");
-	for(int i = 0; i < sb.size(); i++) fout << sb[i] << " "; printf("\n");
-	for(int i = 0; i < va.size(); i++) fout << va[i] << " "; printf("\n");
-	for(int i = 0; i < vb.size(); i++) fout << vb[i] << " "; printf("\n");
+	for(int i = 0; i < sa.size(); i++) fout << sa[i] << " "; fout << "\n";
+	for(int i = 0; i < sb.size(); i++) fout << sb[i] << " "; fout << "\n";
+	for(int i = 0; i < va.size(); i++) fout << va[i] << " "; fout << "\n";
+	for(int i = 0; i < vb.size(); i++) fout << vb[i] << " "; fout << "\n";
 	return 0;
 }

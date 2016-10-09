@@ -106,11 +106,6 @@ int predictor::process(const string &file)
 		sstr<<line.c_str();
 		while(sstr>>f) b.fs100.vb.push_back(f);
 
-		getline(fin, line);
-		sstr.clear();
-		sstr<<line.c_str();
-		while(sstr>>f) b.fs100.vb.push_back(f);
-
 		b.predict();
 	}
 	return 0;
