@@ -19,6 +19,7 @@ double min_average_overlap = 2;
 int min_max_region_overlap = 5;
 int min_sample_length = 100;
 double min_transcript_expression = 50.0;
+double min_region_coverage = 10.0;
 
 int parse_arguments(int argc, const char ** argv)
 {

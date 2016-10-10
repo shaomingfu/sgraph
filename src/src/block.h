@@ -43,6 +43,8 @@ public:
 	int build_abundance(const join_interval_map &jmap);
 	int build_feature_score(fscore &fs);
 	int build_features();
+
+	bool qualify();
 	int write_samples(ofstream &fout);
 	int write_abundance(ofstream &fout);
 };

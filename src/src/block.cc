@@ -202,14 +202,28 @@ int block::build_features()
 	return 0;
 }
 
+bool block::qualify()
+{
+	if(ltype == true) return false;
+	if(rtype == true) return false;
+	if(s.size() < min_sample_length) return false;
+
+	double ave, dev;
+	evaluate(0, s.size(), ave, dev);
+	if(ave < min_region_coverage) return false;
+
+	for(int i = 0; i < abd.size(); i++)
+	{
+		if(abd[i] < min_transcript_expression) return false;
+	}
+	return true;
+}
+
 int block::write_samples(ofstream &fout)
 {
 	assert(s.size() == q.size());
-	if(s.size() < min_sample_length) return 0;
 
-	// TODO
-	if(ltype == true) return 0;
-	if(rtype == true) return 0;
+	if(qualify() == false) return 0;
 
 	block::index++;
 	//printf("# sample-id = %d, length = %lu, location = %s:%d-%lu\n", block::index, s.size(), chrm.c_str(), pos, pos + s.size());
@@ -238,11 +252,8 @@ int block::write_samples(ofstream &fout)
 int block::write_abundance(ofstream &fout)
 {
 	assert(s.size() == q.size());
-	if(s.size() < min_sample_length) return 0;
 
-	// TODO
-	if(ltype == true) return 0;
-	if(rtype == true) return 0;
+	if(qualify() == false) return 0;
 
 	block::index++;
 	//printf("# sample-id = %d, length = %lu, location = %s:%d-%lu\n", block::index, s.size(), chrm.c_str(), pos, pos + s.size());
