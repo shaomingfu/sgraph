@@ -12,10 +12,15 @@ public:
 	position(const string &s);
 
 public:
-	int label;
-	double xyz[3];
-	double pp;
-	int pred;
+	// load from prediction file
+	int label;		// trur label
+	double xyz[3];	// prob for 0, 1, and 2
+	double pp;		// largest prob
+	int pred;		// predicted label
+
+	// load from abundance file
+	int tabd;		// true adb
+	int pabd;		// predicted abd
 
 public:
 	int print();

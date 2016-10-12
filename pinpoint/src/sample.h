@@ -11,6 +11,7 @@ class sample
 {
 public:
 	vector<position> positions;
+
 	vector<block> blocks0;
 	vector<block> blocks2;
 	vector<int> blocks1;
@@ -25,16 +26,25 @@ public:
 	int predict1;
 	int predict2;
 
+	vector<int> splist;
+	vector<double> vabd;
+	double abdratio;
+
 public:
 	int add_position(const string &s);
+	int add_predicted_abundance(int k, int p);
+	int add_true_abundance(int k, int p);
 	int clear();
-	int print();
 	int process();
+	int print(int index);
 
 private:
 	int build_blocks(int ff, vector<block> &blocks);
 	int align_blocks(int ff, vector<block> &blocks, int &ncorrect, int &nlabel);
 	int build_blocks1();
+	int build_splice_positions();
+	int build_abundance();
+	int assess_abundance();
 };
 
 #endif

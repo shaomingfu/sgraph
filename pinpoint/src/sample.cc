@@ -4,11 +4,26 @@
 #include <cassert>
 #include <algorithm>
 #include <set>
+#include <cmath>
 
 int sample::add_position(const string &s)
 {
 	position p(s);
 	positions.push_back(p);
+	return 0;
+}
+
+int sample::add_predicted_abundance(int k, int p)
+{
+	assert(k >= 0 && k < positions.size());
+	positions[k].pabd = p;
+	return 0;
+}
+
+int sample::add_true_abundance(int k, int p)
+{
+	assert(k >= 0 && k < positions.size());
+	positions[k].tabd = p;
 	return 0;
 }
 
@@ -32,7 +47,10 @@ int sample::process()
 	predict0 = blocks0.size();
 	predict2 = blocks2.size();
 	build_blocks1();
-	print();
+
+	build_splice_positions();
+	build_abundance();
+	assess_abundance();
 	return 0;
 }
 
@@ -163,10 +181,69 @@ int sample::align_blocks(int ff, vector<block> &blocks, int &ncorrect, int &nlab
 	return 0;
 }
 
-int sample::print()
+int sample::build_splice_positions()
 {
-	printf("positions = %lu, label0 = %d / %d / %d, label2 = %d / %d / %d, label1 = %d / %d / %d\n", 
+	splist.clear();
+	for(int i = 0; i < blocks0.size(); i++)
+	{
+		int p = blocks0[i].pos + block_size / 2;
+		splist.push_back(p);
+	}
+	for(int i = 0; i < blocks2.size(); i++)
+	{
+		int p = blocks2[i].pos + block_size / 2;
+		splist.push_back(p);
+	}
+	
+	splist.push_back(positions.size());
+	sort(splist.begin(), splist.end());
+
+	return 0;
+}
+
+int sample::build_abundance()
+{
+	vabd.clear();
+	int p1 = 0;
+	for(int i = 0; i < splist.size(); i++)
+	{
+		int p2 = splist[i];
+		assert(p2 >= p1);
+		if(p1 == p2) continue;
+
+		double ave = 0;
+		for(int k = p1; k < p2; k++) ave += positions[k].pabd;
+		ave = ave / (p2 - p1);
+
+		for(int k = p1; k < p2; k++) vabd.push_back(ave);
+
+		p1 = p2;
+	}
+	assert(positions.size() == vabd.size());
+	return 0;
+}
+
+int sample::assess_abundance()
+{
+	abdratio = 0;
+	for(int i = 0; i < vabd.size(); i++)
+	{
+		double tabd = positions[i].tabd + 1.0;
+		double pabd = vabd[i] + 1.0;
+		abdratio += fabs(tabd - pabd) / tabd;
+	}
+	abdratio /= vabd.size();
+	return 0;
+}
+
+int sample::print(int index)
+{
+	if(label0 == 0 && label2 == 0) return 0;
+
+	printf("sample %d: positions = %lu, abd-ratio = %.3lf, label0 = %d / %d / %d, label2 = %d / %d / %d, label1 = %d / %d / %d\n", 
+			index,
 			positions.size(), 
+			abdratio,
 			correct0, predict0, label0, 
 			correct2, predict2, label2, 
 			correct1, predict1, label1);
