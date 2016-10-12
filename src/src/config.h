@@ -37,8 +37,11 @@ extern int min_sample_length;
 extern double min_transcript_expression;
 extern double min_region_coverage;
 
+extern vector<double> abundance_labels;
+
 
 // load and parse
+int locate_label(double abd);
 int load_config(const char * conf_file);
 int parse_arguments(int argc, const char ** argv);
 

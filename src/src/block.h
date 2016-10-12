@@ -21,6 +21,7 @@ public:
 
 	vector<int> labels;	// labels
 	vector<int> abd;	// real abundance
+	vector<int> abl;	// abundance label
 
 	// features
 	vector<int> s;		// abundance

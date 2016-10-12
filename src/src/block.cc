@@ -154,6 +154,23 @@ int block::build_feature_score(fscore &fs)
 	return 0;
 }
 
+int block::build_abundance(const join_interval_map &jmap)
+{
+	if(s.size() < min_sample_length) return 0;
+
+	abd.clear();
+	for(int i = 0; i < s.size(); i++)
+	{
+		int32_t p = i + pos;
+		JIMI it = jmap.find(p);
+		if(it == jmap.end()) abd.push_back(0);
+		else abd.push_back(it->second);
+		int l = locate_label(abd[i]);
+		abl.push_back(l);
+	}
+	return 0;
+}
+
 int block::build_labels(const set<int32_t> &ss, const set<int32_t> &tt)
 {
 	if(s.size() < min_sample_length) return 0;
@@ -168,21 +185,6 @@ int block::build_labels(const set<int32_t> &ss, const set<int32_t> &tt)
 		if(i == 0 && ltype == true) label = 1;
 		if(i == s.size() - 1 && rtype == true) label = -1;
 		labels.push_back(label);
-	}
-	return 0;
-}
-
-int block::build_abundance(const join_interval_map &jmap)
-{
-	if(s.size() < min_sample_length) return 0;
-
-	abd.clear();
-	for(int i = 0; i < s.size(); i++)
-	{
-		int32_t p = i + pos;
-		JIMI it = jmap.find(p);
-		if(it == jmap.end()) abd.push_back(0);
-		else abd.push_back(it->second);
 	}
 	return 0;
 }
@@ -207,6 +209,8 @@ bool block::qualify()
 	if(ltype == true) return false;
 	if(rtype == true) return false;
 	if(s.size() < min_sample_length) return false;
+
+	return true;
 
 	double ave, dev;
 	evaluate(0, s.size(), ave, dev);
@@ -233,7 +237,8 @@ int block::write_samples(ofstream &fout)
 	fout << ", location = " << chrm.c_str() << ":" << pos << "-" << pos + s.size() << "\n";
 
 	// print label
-	for(int i = 0; i < labels.size(); i++)  fout << labels[i] <<" "; fout << "\n";
+	//for(int i = 0; i < labels.size(); i++)  fout << labels[i] <<" "; fout << "\n";
+	for(int i = 0; i < labels.size(); i++)  fout << abl[i] <<" "; fout << "\n";
 
 	// print features
 	for(int i = 0; i < s.size(); i++) fout<< s[i] << " "; fout<<"\n";
@@ -275,6 +280,7 @@ int block::write_abundance(ofstream &fout)
 
 	// print abundance
 	for(int i = 0; i < abd.size(); i++) fout<< abd[i] << " "; fout<<"\n";
+	for(int i = 0; i < abl.size(); i++) fout<< abl[i] << " "; fout<<"\n";
 
 	return 0;
 }
