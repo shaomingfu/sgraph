@@ -19,9 +19,9 @@ double min_average_overlap = 2;
 int min_max_region_overlap = 5;
 int min_sample_length = 100;
 double min_transcript_expression = 10.0;
-double min_region_coverage = 10.0;
+double min_region_coverage = 5.0;
 
-vector<double> abundance_labels = {10, 15, 22, 33, 47, 68, 95, 130, 180, 252, 358, 524, 859, 2823};
+vector<double> abundance_labels = {15, 22, 33, 48, 68, 95, 132, 181, 255, 362, 530, 932};
 
 int locate_label(double abd)
 {
