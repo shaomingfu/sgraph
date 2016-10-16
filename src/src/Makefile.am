@@ -20,7 +20,6 @@ sgraph_SOURCES = interval_map.h interval_map.cc \
 				 bundle_base.h bundle_base.cc \
 				 bundle.h bundle.cc \
 				 assembler.h assembler.cc \
-				 predictor.h predictor.cc \
 				 gtf.h gtf.cc \
 				 main.cc
 

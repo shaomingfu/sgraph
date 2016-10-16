@@ -214,6 +214,9 @@ bool block::qualify()
 	evaluate(0, s.size(), ave, dev);
 	if(ave < min_region_coverage) return false;
 
+	// TODO
+	return true;
+
 	for(int i = 0; i < abd.size(); i++)
 	{
 		if(abd[i] < min_transcript_expression) return false;
@@ -235,8 +238,8 @@ int block::write_samples(ofstream &fout)
 	fout << ", location = " << chrm.c_str() << ":" << pos << "-" << pos + s.size() << "\n";
 
 	// print label
-	//for(int i = 0; i < labels.size(); i++)  fout << labels[i] <<" "; fout << "\n";
-	for(int i = 0; i < labels.size(); i++)  fout << abl[i] <<" "; fout << "\n";
+	for(int i = 0; i < labels.size(); i++)  fout << labels[i] <<" "; fout << "\n";
+	//for(int i = 0; i < labels.size(); i++)  fout << abl[i] <<" "; fout << "\n";
 
 	// print features
 	for(int i = 0; i < s.size(); i++) fout<< s[i] << " "; fout<<"\n";
