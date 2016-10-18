@@ -16,6 +16,7 @@ public:
 	vector<block> blocks2;
 	vector<int> blocks1;
 
+	bool accept;
 	int correct0;
 	int correct1;
 	int correct2;
@@ -37,6 +38,7 @@ public:
 	int print(int index);
 
 private:
+	int qualify();
 	int assign_true_labels();
 	int build_blocks(int ff, vector<block> &blocks);
 	int align_blocks(int ff, vector<block> &blocks, int &ncorrect, int &nlabel);

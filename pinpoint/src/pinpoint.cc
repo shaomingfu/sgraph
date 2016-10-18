@@ -97,7 +97,7 @@ bool pinpoint::process()
 	if(sp.positions.size() == 0) return false;
 
 	sp.process();
-	sp.print(index++);
+	if(sp.accept == true) sp.print(index++);
 
 	correct0 += sp.correct0;
 	correct1 += sp.correct1;
@@ -109,7 +109,7 @@ bool pinpoint::process()
 	predict1 += sp.predict1;
 	predict2 += sp.predict2;
 
-	if(sp.label0 >= 1 || sp.label2 >= 1)
+	if(sp.accept == true)
 	{
 		nsample++;
 		abdratio += sp.abdratio;

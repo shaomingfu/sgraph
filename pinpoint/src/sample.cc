@@ -21,6 +21,7 @@ int sample::clear()
 	blocks2.clear();
 	correct0 = correct1 = correct2 = 0;
 	label0 = label1 = label2 = 0;
+	accept = false;
 	return 0;
 }
 
@@ -39,6 +40,23 @@ int sample::process()
 	build_splice_positions();
 	build_abundance();
 	assess_abundance();
+
+	qualify();
+	return 0;
+}
+
+int sample::qualify()
+{
+	accept = true;
+	if(label0 == 0 && label2 == 0) accept = false;
+
+	if(accept == false) return 0;
+
+	for(int i = 0; i < positions.size(); i++)
+	{
+		if(positions[i].tabd < min_accept_expression) accept = false;
+		if(accept == false) return 0;
+	}
 	return 0;
 }
 
@@ -237,8 +255,6 @@ int sample::assess_abundance()
 
 int sample::print(int index)
 {
-	if(label0 == 0 && label2 == 0) return 0;
-
 	printf("sample %d: positions = %lu, abd-ratio = %.3lf, label0 = %d / %d / %d, label2 = %d / %d / %d, label1 = %d / %d / %d\n", 
 			index,
 			positions.size(), 

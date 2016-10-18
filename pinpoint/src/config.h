@@ -8,6 +8,7 @@ extern int block_size;
 extern int min_block_distance;
 extern int max_correct_distance;
 extern double min_prob;
+extern double min_accept_expression;
 
 extern int block_size1;
 extern double min_prob1;
