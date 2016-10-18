@@ -214,14 +214,14 @@ bool block::qualify()
 	evaluate(0, s.size(), ave, dev);
 	if(ave < min_region_coverage) return false;
 
-	// TODO
-	return true;
-
+	int cnt = 0;
 	for(int i = 0; i < abd.size(); i++)
 	{
-		if(abd[i] < min_transcript_expression) return false;
+		if(abd[i] >= min_transcript_expression) cnt++;
 	}
-	return true;
+	
+	if(cnt * 1.0 / abd.size() < 0.5) return false;
+	else return true;
 }
 
 int block::write_samples(ofstream &fout)
