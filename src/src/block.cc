@@ -210,6 +210,8 @@ bool block::qualify()
 	if(rtype == true) return false;
 	if(s.size() < min_sample_length) return false;
 
+	return true;
+
 	double ave, dev;
 	evaluate(0, s.size(), ave, dev);
 	if(ave < min_region_coverage) return false;
