@@ -214,6 +214,8 @@ bool block::qualify()
 	evaluate(0, s.size(), ave, dev);
 	if(ave < min_region_coverage) return false;
 
+	return true;
+
 	int cnt = 0;
 	for(int i = 0; i < abd.size(); i++)
 	{
