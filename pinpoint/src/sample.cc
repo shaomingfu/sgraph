@@ -13,20 +13,6 @@ int sample::add_position(const string &s)
 	return 0;
 }
 
-int sample::add_predicted_abundance(int k, int p)
-{
-	assert(k >= 0 && k < positions.size());
-	positions[k].pabd = p;
-	return 0;
-}
-
-int sample::add_true_abundance(int k, int p)
-{
-	assert(k >= 0 && k < positions.size());
-	positions[k].tabd = p;
-	return 0;
-}
-
 int sample::clear()
 {
 	positions.clear();
@@ -40,6 +26,8 @@ int sample::clear()
 
 int sample::process()
 {
+	assign_true_labels();
+
 	build_blocks(0, blocks0);
 	build_blocks(2, blocks2);
 	align_blocks(0, blocks0, correct0, label0);
@@ -51,6 +39,15 @@ int sample::process()
 	build_splice_positions();
 	build_abundance();
 	assess_abundance();
+	return 0;
+}
+
+int sample::assign_true_labels()
+{
+	for(int i = 0; i < positions.size(); i++)
+	{
+		positions[i].assign_true_label();
+	}
 	return 0;
 }
 
@@ -212,7 +209,9 @@ int sample::build_abundance()
 		if(p1 == p2) continue;
 
 		double ave = 0;
-		for(int k = p1; k < p2; k++) ave += positions[k].pabd;
+		// TODO
+		//for(int k = p1; k < p2; k++) ave += positions[k].pabd;
+		for(int k = p1; k < p2; k++) ave += positions[k].rabd;
 		ave = ave / (p2 - p1);
 
 		for(int k = p1; k < p2; k++) vabd.push_back(ave);
@@ -226,7 +225,7 @@ int sample::build_abundance()
 int sample::assess_abundance()
 {
 	abdratio = 0;
-	for(int i = 0; i < vabd.size(); i++)
+	for(int i = 0; i < positions.size(); i++)
 	{
 		double tabd = positions[i].tabd + 1.0;
 		double pabd = vabd[i] + 1.0;

@@ -19,7 +19,7 @@ int main(int argc, const char ** argv)
 				<half-window-size-for-correct (for 0 and 2)> \n\
 				<probability-threshold (for 1)> \n\
 				<half-window-size-for-computing-MIN (for 1)> \n\
-				<abundance-file> \n", argv[0]);
+				<abundance-file>\n", argv[0]);
 		return 0;
 	}
 

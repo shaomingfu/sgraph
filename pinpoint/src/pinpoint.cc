@@ -58,33 +58,33 @@ int pinpoint::load_abundance()
 		if(line.size() == 0) continue;
 		if(line[0] != '#') continue;
 
-		// skip labels
-		getline(fabd, line);
-
-		// predicted abundance
+		// true label
+		int k = 0;
 		getline(fabd, line);
 		sstr.clear();
 		sstr<<line.c_str();
+		while(sstr>>sp.positions[k++].tlab){}
 
-		int k = 0;
-		int p = 0;
-		while(sstr>>p)
-		{
-			sp.add_predicted_abundance(k, p);
-			k++;
-		}
+		// for read abundance
+		k = 0;
+		getline(fabd, line);
+		sstr.clear();
+		sstr<<line.c_str();
+		while(sstr>>sp.positions[k++].rabd){}
 
 		// for true abundance
+		k = 0;
 		getline(fabd, line);
 		sstr.clear();
 		sstr<<line.c_str();
+		while(sstr>>sp.positions[k++].tabd){}
 
+		// for true abundance label
 		k = 0;
-		while(sstr>>p)
-		{
-			sp.add_true_abundance(k, p);
-			k++;
-		}
+		getline(fabd, line);
+		sstr.clear();
+		sstr<<line.c_str();
+		while(sstr>>sp.positions[k++].alab){}
 
 		break;
 	}

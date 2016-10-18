@@ -17,12 +17,16 @@ public:
 	double xyz[3];	// prob for 0, 1, and 2
 	double pp;		// largest prob
 	int pred;		// predicted label
+	double pabd;	// predicted abd
 
 	// load from abundance file
-	int tabd;		// true adb
-	int pabd;		// predicted abd
+	int tlab;		// true label
+	double rabd;	// read abundance
+	double tabd;	// true abundance
+	int alab;		// abundance label
 
 public:
+	int assign_true_label();
 	int print();
 };
 

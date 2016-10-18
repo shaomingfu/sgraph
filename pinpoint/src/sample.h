@@ -32,13 +32,12 @@ public:
 
 public:
 	int add_position(const string &s);
-	int add_predicted_abundance(int k, int p);
-	int add_true_abundance(int k, int p);
 	int clear();
 	int process();
 	int print(int index);
 
 private:
+	int assign_true_labels();
 	int build_blocks(int ff, vector<block> &blocks);
 	int align_blocks(int ff, vector<block> &blocks, int &ncorrect, int &nlabel);
 	int build_blocks1();
