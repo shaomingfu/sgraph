@@ -97,7 +97,11 @@ bool pinpoint::process()
 	if(sp.positions.size() == 0) return false;
 
 	sp.process();
-	if(sp.accept == false) return true;
+	if(sp.accept == false) 
+	{
+		sp.clear();
+		return true;
+	}
 
 	sp.print(index++);
 

@@ -19,7 +19,11 @@ int position::assign_true_label()
 	if(tlab == 0) label = 1;
 	else if(tlab == 1) label = 2;
 	else if(tlab == -1) label = 0;
-	else assert(false);
+	else 
+	{
+		printf("tlab = %d\n", tlab);
+		assert(false);
+	}
 	return 0;
 }
 

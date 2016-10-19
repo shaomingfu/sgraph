@@ -54,9 +54,11 @@ int sample::qualify()
 
 	for(int i = 0; i < positions.size(); i++)
 	{
+		assert(positions[i].tabd >= 0);
 		if(positions[i].tabd < min_accept_expression) accept = false;
 		if(accept == false) return 0;
 	}
+	
 	return 0;
 }
 
