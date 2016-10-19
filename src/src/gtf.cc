@@ -10,6 +10,7 @@ gtf::gtf(const string &file)
 {
 	build_boundary_positions();
 	build_interval_map();
+	print();
 }
 
 gtf::~gtf()
@@ -30,6 +31,9 @@ int gtf::build_boundary_positions()
 			transcript &t = g.transcripts[k];
 			PI32 p = t.get_bounds();
 			if(p.first < 0 || p.second < 0) continue;
+
+			//printf("transcript %d [%d-%d), expression = %d\n", k, p.first, p.second, t.expression);
+
 			if(t.expression < min_transcript_expression) continue;
 
 			if(mss.find(chrm) == mss.end())
@@ -90,5 +94,18 @@ int gtf::build_interval_map()
 		}
 	}
 
+	return 0;
+}
+
+int gtf::print()
+{
+	for(MSSI::iterator it = mss.begin(); it != mss.end(); it++)
+	{
+		printf("map of chrm %s has %lu start positions\n", it->first.c_str(), it->second.size());
+	}
+	for(MSSI::iterator it = mtt.begin(); it != mtt.end(); it++)
+	{
+		printf("map of chrm %s has %lu end positions\n", it->first.c_str(), it->second.size());
+	}
 	return 0;
 }

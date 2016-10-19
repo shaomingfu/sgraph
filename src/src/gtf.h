@@ -30,6 +30,7 @@ public:
 protected:
 	int build_boundary_positions();
 	int build_interval_map();
+	int print();
 };
 
 #endif

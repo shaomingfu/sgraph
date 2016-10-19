@@ -111,6 +111,8 @@ int assembler::process_bundle(bundle_base &bb, bam_hdr_t *h)
 	set<int32_t> &ss2 = s2;
 	join_interval_map &jmap = jmap0;
 
+	//printf("bundle for chrm of %s\n", chrm.c_str());
+
 	if(gf.mss.find(chrm) != gf.mss.end()) ss1 = gf.mss[chrm];
 	if(gf.mtt.find(chrm) != gf.mtt.end()) ss2 = gf.mtt[chrm];
 	if(gf.jmap.find(chrm) != gf.jmap.end()) jmap = gf.jmap[chrm];
