@@ -38,14 +38,13 @@ int assembler::print()
 }
 
 
-int assembler::process(const string &file, const string &sample_file, const string &abundance_file)
+int assembler::process(const string &file, const string &sample_file)
 {
     samFile *fn = sam_open(file.c_str(), "r");
     bam_hdr_t *h= sam_hdr_read(fn);
     bam1_t *b = bam_init1();
 
 	sample_fout.open(sample_file.c_str());
-	abundance_fout.open(abundance_file.c_str());
 
 	bundle_base bb1;		// for + reads
 	bundle_base bb2;		// for - reads
@@ -80,7 +79,6 @@ int assembler::process(const string &file, const string &sample_file, const stri
     sam_close(fn);
 
 	sample_fout.close();
-	abundance_fout.close();
 
 	return 0;
 }
@@ -124,7 +122,6 @@ int assembler::process_bundle(bundle_base &bb, bam_hdr_t *h)
 		b.build_abundance(jmap);
 		b.build_features();
 		b.write_samples(sample_fout);
-		b.write_abundance(abundance_fout);
 	}
 
 	bb.clear();

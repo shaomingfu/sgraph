@@ -243,6 +243,9 @@ int block::write_samples(ofstream &fout)
 
 	// print label
 	for(int i = 0; i < labels.size(); i++)  fout << labels[i] <<" "; fout << "\n";
+
+	// print abundance
+	for(int i = 0; i < abd.size(); i++) fout<< abd[i] << " "; fout<<"\n";
 	//for(int i = 0; i < labels.size(); i++)  fout << abl[i] <<" "; fout << "\n";
 
 	// print features
