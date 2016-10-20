@@ -13,8 +13,8 @@ int main(int argc, const char ** argv)
 	if(argc != 6) 
 	{
 		printf("usage: %s: \n\
+				<sample-file> \n\
 				<prediction-file> \n\
-				<abundance-file> \n\
 				<probability-threshold> \n\
 				<half-window-size-for-average> \n\
 				<min-accept-expression>\n", argv[0]);

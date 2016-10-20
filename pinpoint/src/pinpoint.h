@@ -11,12 +11,12 @@ using namespace std;
 class pinpoint
 {
 public:
-	pinpoint(const string &prd_file, const string &abd_file);
+	pinpoint(const string &sample_file, const string &pred_file);
 	~pinpoint();
 
 public:
+	ifstream fsmp;
 	ifstream fprd;
-	ifstream fabd;
 
 	sample sp;
 	int index;
@@ -36,8 +36,8 @@ public:
 
 public:
 	int solve();
+	int load_sample();
 	int load_prediction();
-	int load_abundance();
 	bool process();
 };
 

@@ -30,6 +30,6 @@ int position::assign_true_label()
 int position::print()
 {
 	printf("%d -> %.2lf %.2lf %.2lf -> %.2lf %d, %.3lf (%d %.3lf %.3lf %d)\n", 
-			label, xyz[0], xyz[1], xyz[2], pp, pred, pabd, tlab, rabd, tabd, alab);
+			label, xyz[0], xyz[1], xyz[2], pp, pred, pabd, tlab, tabd, rabd);
 	return 0;
 }

@@ -19,11 +19,10 @@ public:
 	int pred;		// predicted label
 	double pabd;	// predicted abd
 
-	// load from abundance file
+	// load from sample file
 	int tlab;		// true label
-	double rabd;	// read abundance
 	double tabd;	// true abundance
-	int alab;		// abundance label
+	double rabd;	// read abundance
 
 public:
 	int assign_true_label();

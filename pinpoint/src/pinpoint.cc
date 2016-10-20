@@ -9,10 +9,10 @@
 
 using namespace std;
 
-pinpoint::pinpoint(const string &prd_file, const string &abd_file)
+pinpoint::pinpoint(const string &sample_file, const string &pred_file)
 {
-	fprd.open(prd_file.c_str());
-	fabd.open(abd_file.c_str());
+	fsmp.open(sample_file.c_str());
+	fprd.open(pred_file.c_str());
 
 	correct0 = 0;
 	correct1 = 0;
@@ -33,7 +33,7 @@ pinpoint::pinpoint(const string &prd_file, const string &abd_file)
 pinpoint::~pinpoint()
 {
 	fprd.close();
-	fabd.close();
+	fsmp.close();
 }
 
 int pinpoint::load_prediction()
@@ -49,42 +49,50 @@ int pinpoint::load_prediction()
 	return 0;
 }
 
-int pinpoint::load_abundance()
+int pinpoint::load_sample()
 {
 	stringstream sstr;
 	string line;
-	while(getline(fabd, line))
+	while(getline(fsmp, line))
 	{
 		if(line.size() == 0) continue;
 		if(line[0] != '#') continue;
 
 		// true label
 		int k = 0;
-		getline(fabd, line);
+		getline(fsmp, line);
 		sstr.clear();
 		sstr<<line.c_str();
 		while(sstr>>sp.positions[k++].tlab){}
 
-		// for read abundance
-		k = 0;
-		getline(fabd, line);
-		sstr.clear();
-		sstr<<line.c_str();
-		while(sstr>>sp.positions[k++].rabd){}
-
 		// for true abundance
 		k = 0;
-		getline(fabd, line);
+		getline(fsmp, line);
 		sstr.clear();
 		sstr<<line.c_str();
 		while(sstr>>sp.positions[k++].tabd){}
 
-		// for true abundance label
+		// for read abundance
 		k = 0;
-		getline(fabd, line);
+		getline(fsmp, line);
 		sstr.clear();
 		sstr<<line.c_str();
-		while(sstr>>sp.positions[k++].alab){}
+		while(sstr>>sp.positions[k++].rabd){}
+
+		// skip remaining lines
+		getline(fsmp, line);
+		getline(fsmp, line);
+		getline(fsmp, line);
+		getline(fsmp, line);
+		getline(fsmp, line);
+		getline(fsmp, line);
+		getline(fsmp, line);
+		getline(fsmp, line);
+		getline(fsmp, line);
+		getline(fsmp, line);
+		getline(fsmp, line);
+		getline(fsmp, line);
+		getline(fsmp, line);
 
 		break;
 	}
@@ -126,8 +134,8 @@ int pinpoint::solve()
 {
 	while(true)
 	{
+		load_sample();
 		load_prediction();
-		load_abundance();
 		bool b = process();
 		if(b == false) break;
 	}
