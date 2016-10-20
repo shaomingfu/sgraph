@@ -58,7 +58,7 @@ int block::predict()
 			pp = pp3;
 		}
 
-		int l0 = (labels[i] == 0) ? 1 : (labels[i] == 1 ? 2 : 0);
+		int l0 = (labels[i] == 0) ? 1 : ((labels[i] == 1) ? 2 : 0);
 
 		printf("%d -> %.6lf %.6lf %.6lf -> %.6lf %d\n", l0, pp1, pp3, pp2, pp, l1);
 	}

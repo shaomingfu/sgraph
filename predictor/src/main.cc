@@ -16,6 +16,11 @@ int main(int argc, const char **argv)
 		predictor p;
 		p.process(argv[1]);
 	}
+	else 
+	{
+		printf("%s: <sample-file>\n", argv[0]);
+		return 0;
+	}
 
     return 0;
 }

@@ -30,6 +30,12 @@ int predictor::process(const string &file)
 		sstr<<line.c_str();
 		while(sstr>>k) b.labels.push_back(k);
 
+		// real abundance
+		getline(fin, line);
+		sstr.clear();
+		sstr<<line.c_str();
+		while(sstr>>k) b.abd.push_back(k);
+
 		// abundance
 		getline(fin, line);
 		sstr.clear();
