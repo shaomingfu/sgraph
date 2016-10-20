@@ -27,8 +27,6 @@ int sample::clear()
 
 int sample::process()
 {
-	assign_true_labels();
-
 	build_blocks(0, blocks0);
 	build_blocks(2, blocks2);
 	align_blocks(0, blocks0, correct0, label0);
@@ -62,15 +60,6 @@ int sample::qualify()
 	return 0;
 }
 
-int sample::assign_true_labels()
-{
-	for(int i = 0; i < positions.size(); i++)
-	{
-		positions[i].assign_true_label();
-	}
-	return 0;
-}
-
 int sample::build_blocks1()
 {
 	blocks1.assign(positions.size(), 1);
@@ -91,9 +80,9 @@ int sample::build_blocks1()
 
 	for(int i = 0; i < positions.size(); i++)
 	{
-		if(positions[i].label == 1) label1++;
+		if(positions[i].tlab == 1) label1++;
 		if(blocks1[i] == 1) predict1++;
-		if(positions[i].label == 1 && blocks1[i] == 1) correct1++;
+		if(positions[i].tlab == 1 && blocks1[i] == 1) correct1++;
 	}
 	return 0;
 }
@@ -155,7 +144,7 @@ int sample::align_blocks(int ff, vector<block> &blocks, int &ncorrect, int &nlab
 	for(int i = 0; i < positions.size(); i++)
 	{
 		position &p = positions[i];
-		if(p.label != ff) continue;
+		if(p.tlab != ff) continue;
 		vv.push_back(PI(i, -1));
 	}
 	nlabel = vv.size();

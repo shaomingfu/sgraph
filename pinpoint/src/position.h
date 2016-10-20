@@ -13,19 +13,17 @@ public:
 
 public:
 	// load from prediction file
-	int label;		// trur label
+	int tlab;		// true label
 	double xyz[3];	// prob for 0, 1, and 2
 	double pp;		// largest prob
 	int pred;		// predicted label
 	double pabd;	// predicted abd
 
 	// load from sample file
-	int tlab;		// true label
 	double tabd;	// true abundance
 	double rabd;	// read abundance
 
 public:
-	int assign_true_label();
 	int print();
 };
 

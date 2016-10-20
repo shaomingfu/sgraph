@@ -39,7 +39,6 @@ public:
 
 private:
 	int qualify();
-	int assign_true_labels();
 	int build_blocks(int ff, vector<block> &blocks);
 	int align_blocks(int ff, vector<block> &blocks, int &ncorrect, int &nlabel);
 	int build_blocks1();
