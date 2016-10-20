@@ -179,16 +179,15 @@ int block::build_labels(const set<int32_t> &ss, const set<int32_t> &tt)
 	for(int i = 0; i < s.size(); i++)
 	{
 		int32_t p = i + pos;
-		int label = 0;
-		if(ss.find(p) != ss.end()) label = 1;
-		if(tt.find(p) != tt.end()) label = -1;
-		if(i == 0 && ltype == true) label = 1;
-		if(i == s.size() - 1 && rtype == true) label = -1;
+		int label = 1;
+		if(ss.find(p) != ss.end()) label = 2;
+		if(tt.find(p) != tt.end()) label = 0;
+		if(i == 0 && ltype == true) label = 2;
+		if(i == s.size() - 1 && rtype == true) label = 0;
 		labels.push_back(label);
 	}
 	return 0;
 }
-
 
 int block::build_features()
 {
