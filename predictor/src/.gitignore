@@ -1,0 +1,5 @@
+*.o
+predictor
+Makefile
+Makefile.in
+*.Po
