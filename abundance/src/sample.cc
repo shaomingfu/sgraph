@@ -1,4 +1,5 @@
 #include "sample.h"
+#include "config.h"
 #include <cstdio>
 #include <cassert>
 #include <algorithm>
@@ -30,8 +31,8 @@ int sample::assess_abundance()
 	abdratio = 0;
 	for(int i = 0; i < positions.size(); i++)
 	{
-		double tabd = positions[i].tabd + 0.1;
-		double pabd = positions[i].pred + 0.1;
+		double tabd = positions[i].tabd + 1.0;
+		double pabd = positions[i].pred + 1.0;
 		abdratio += fabs(tabd - pabd) / tabd;
 	}
 	abdratio /= positions.size();
@@ -42,8 +43,13 @@ bool sample::boundary()
 {
 	for(int i = 0; i < positions.size(); i++)
 	{
-		if(positions[i].tlab ==  1) return true;
-		if(positions[i].tlab == -1) return true;
+		if(positions[i].tabd < min_accept_expression) return false;
+	}
+
+	for(int i = 0; i < positions.size(); i++)
+	{
+		if(positions[i].tlab == 0) return true;
+		if(positions[i].tlab == 2) return true;
 	}
 	return false;
 }
