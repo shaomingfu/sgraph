@@ -13,6 +13,8 @@ extern double min_accept_expression;
 extern int block_size1;
 extern double min_prob1;
 
+extern bool extended;
+
 typedef pair<int, int> PI;
 
 #endif

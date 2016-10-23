@@ -218,9 +218,11 @@ int sample::build_abundance()
 		if(p1 == p2) continue;
 
 		double ave = 0;
-		// TODO
-		//for(int k = p1; k < p2; k++) ave += positions[k].pabd;
-		for(int k = p1; k < p2; k++) ave += positions[k].rabd;
+		for(int k = p1; k < p2; k++)
+		{
+			if(extended == false) ave += positions[k].rabd;
+			else ave += positions[k].pabd;
+		}
 		ave = ave / (p2 - p1);
 
 		for(int k = p1; k < p2; k++) vabd.push_back(ave);

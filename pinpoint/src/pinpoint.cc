@@ -134,8 +134,8 @@ int pinpoint::solve()
 {
 	while(true)
 	{
-		load_sample();
 		load_prediction();
+		load_sample();
 		bool b = process();
 		if(b == false) break;
 	}

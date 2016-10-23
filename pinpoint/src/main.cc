@@ -10,16 +10,19 @@ using namespace std;
 
 int main(int argc, const char ** argv)
 {
-	if(argc != 6) 
+	if(argc != 6 && argc != 7) 
 	{
 		printf("usage: %s: \n\
 				<sample-file> \n\
 				<prediction-file> \n\
 				<probability-threshold> \n\
 				<half-window-size-for-average> \n\
-				<min-accept-expression>\n", argv[0]);
+				<min-accept-expression> \n\
+				[extended]\n", argv[0]);
 		return 0;
 	}
+
+	if(argc == 7) extended = true;
 
 	min_prob = atof(argv[3]);
 	block_size = 2 * atoi(argv[4]);
