@@ -6,13 +6,14 @@
 #include "interval_map.h"
 #include "block.h"
 #include "binomial.h"
+#include "fasta.h"
 
 using namespace std;
 
 class region
 {
 public:
-	region(const string &_chrm, int32_t _lpos, int32_t _rpos, int _ltype, int _rtype, const split_interval_map *_imap, const split_interval_map *_qmap);
+	region(const string &_chrm, int32_t _lpos, int32_t _rpos, int _ltype, int _rtype, const split_interval_map *_imap, const split_interval_map *_qmap, fasta &_fa);
 	~region();
 
 private:
@@ -23,6 +24,7 @@ private:
 	int rtype;						// type of the right boundary
 	const split_interval_map *imap;	// pointer to a interval map
 	const split_interval_map *qmap;	// pointer to a quality map
+	fasta &fa;						// fasta
 
 	int32_t lcore;					// left core position
 	int32_t rcore;					// right core position

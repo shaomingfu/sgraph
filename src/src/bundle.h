@@ -6,16 +6,18 @@
 #include "junction.h"
 #include "region.h"
 #include "block.h"
+#include "fasta.h"
 
 using namespace std;
 
 class bundle : public bundle_base
 {
 public:
-	bundle(const bundle_base &bb);
+	bundle(const bundle_base &bb, fasta &_fa);
 	virtual ~bundle();
 
 public:
+	fasta &fa;						// fasta
 	vector<junction> junctions;		// splice junctions
 	vector<region> regions;			// regions
 	split_interval_map imap;		// interval map

@@ -18,16 +18,17 @@ uint32_t min_max_splice_boundary_qual = 3;
 double min_average_overlap = 2;
 int min_max_region_overlap = 5;
 int min_sample_length = 100;
-double min_transcript_expression = 10.0;
+double min_transcript_expression = 1.0;
 double min_region_coverage = 5.0;
 
-vector<double> abundance_labels = {15, 22, 33, 48, 68, 95, 132, 181, 255, 362, 530, 932};
+//vector<double> abundance_labels = {15, 22, 33, 48, 68, 95, 132, 181, 255, 362, 530, 932};		// min_transcript_expression = 10
+vector<double> abundance_labels = {1, 2, 3, 4, 6, 9, 15, 22, 33, 47, 68, 94, 130, 179, 252, 358, 524, 859};	// min_transcript_expression = 1.0
 
 int locate_label(double abd)
 {
 	for(int k = 0; k < abundance_labels.size(); k++)
 	{
-		if(abd < abundance_labels[k]) return k;
+		if(abd <= abundance_labels[k]) return k;
 	}
 	return abundance_labels.size();
 }

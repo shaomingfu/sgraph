@@ -5,8 +5,8 @@
 
 using namespace std;
 
-region::region(const string &_chrm, int32_t _lpos, int32_t _rpos, int _ltype, int _rtype, const split_interval_map *_imap, const split_interval_map *_qmap)
-	:chrm(_chrm), lpos(_lpos), rpos(_rpos), imap(_imap), qmap(_qmap), ltype(_ltype), rtype(_rtype)
+region::region(const string &_chrm, int32_t _lpos, int32_t _rpos, int _ltype, int _rtype, const split_interval_map *_imap, const split_interval_map *_qmap, fasta &_fa)
+	:chrm(_chrm), lpos(_lpos), rpos(_rpos), imap(_imap), qmap(_qmap), ltype(_ltype), rtype(_rtype), fa(_fa)
 {
 	lcore = lpos;
 	rcore = rpos;
@@ -36,6 +36,8 @@ int region::build_block(block &b)
 		b.s.push_back(w);
 		b.q.push_back(q);
 	}
+
+	b.seq = fa.get_seq(chrm, lcore, rcore - lcore);
 
 	if(ltype == START_BOUNDARY) b.ltype = true;
 	else b.ltype = false;

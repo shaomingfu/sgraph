@@ -258,36 +258,36 @@ int block::write_samples(ofstream &fout)
 	// print abundance
 	//for(int i = 0; i < abd.size(); i++) printf("%d ", abd[i]); printf("\n");
 
+	// write sequence
+	assert(seq.size() == s.size());
+	for(int i = 0; i < seq.size(); i++)
+	{
+		if(seq[i] == 'A') fout << "1 "; 
+		else fout << "0 ";
+	}
+	fout << "\n";
+
+	for(int i = 0; i < seq.size(); i++)
+	{
+		if(seq[i] == 'C') fout << "1 "; 
+		else fout << "0 ";
+	}
+	fout << "\n";
+
+	for(int i = 0; i < seq.size(); i++)
+	{
+		if(seq[i] == 'G') fout << "1 "; 
+		else fout << "0 ";
+	}
+	fout << "\n";
+
+	for(int i = 0; i < seq.size(); i++)
+	{
+		if(seq[i] == 'T') fout << "1 "; 
+		else fout << "0 ";
+	}
+	fout << "\n";
+
 	return 0;
 }
 
-int block::write_abundance(ofstream &fout)
-{
-	assert(s.size() == q.size());
-
-	if(qualify() == false) return 0;
-
-	block::index++;
-	//printf("# sample-id = %d, length = %lu, location = %s:%d-%lu\n", block::index, s.size(), chrm.c_str(), pos, pos + s.size());
-
-	fout << setiosflags(ios::fixed) << setprecision(3);
-	fout << "# sample-id = " << block::index <<", length = " << s.size();
-	fout << ", location = " << chrm.c_str() << ":" << pos << "-" << pos + s.size() << "\n";
-
-	// print label
-	for(int i = 0; i < labels.size(); i++)  fout << labels[i] <<" "; fout << "\n";
-
-	// print features
-	for(int i = 0; i < s.size(); i++) fout<< s[i] << " "; fout<<"\n";
-
-	//for(int i = 0; i < q.size(); i++) fout<< q[i] << " "; fout<<"\n";
-	//fs20.write(fout);
-	//fs50.write(fout);
-	//fs100.write(fout);
-
-	// print abundance
-	for(int i = 0; i < abd.size(); i++) fout<< abd[i] << " "; fout<<"\n";
-	for(int i = 0; i < abl.size(); i++) fout<< abl[i] << " "; fout<<"\n";
-
-	return 0;
-}

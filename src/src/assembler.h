@@ -9,16 +9,18 @@
 #include "gtf.h"
 #include "block.h"
 #include "bundle_base.h"
+#include "fasta.h"
 
 using namespace std;
 
 class assembler
 {
 public:
-	assembler(const string &gtf_file);
+	assembler(const string &gtf_file, const string &fasta_dir);
 	~assembler();
 
 public:
+	fasta fa;
 	gtf gf;
 	ofstream sample_fout;
 

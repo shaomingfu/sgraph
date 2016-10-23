@@ -7,8 +7,8 @@
 #include "bundle.h"
 #include "genome.h"
 
-assembler::assembler(const string &file)
-	: gf(file)
+assembler::assembler(const string &file, const string &fasta_dir)
+	: gf(file), fa(fasta_dir)
 {
 }
 
@@ -98,7 +98,7 @@ int assembler::process_bundle(bundle_base &bb, bam_hdr_t *h)
 	string chrm(buf);
 	bb.set_chrm(chrm);
 
-	bundle bd(bb);
+	bundle bd(bb, fa);
 	bd.build();
 
 	set<int32_t> s1;

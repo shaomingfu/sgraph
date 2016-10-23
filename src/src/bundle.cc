@@ -7,8 +7,8 @@
 #include "bundle.h"
 #include "region.h"
 
-bundle::bundle(const bundle_base &bb)
-	: bundle_base(bb)
+bundle::bundle(const bundle_base &bb, fasta &_fa)
+	: bundle_base(bb), fa(_fa)
 {
 }
 
@@ -125,7 +125,7 @@ int bundle::build_regions()
 		int ltype = v[i].second;
 		int rtype = v[i + 1].second;
 		
-		region r(chrm, lpos, rpos, ltype, rtype, &imap, &qmap);
+		region r(chrm, lpos, rpos, ltype, rtype, &imap, &qmap, fa);
 		regions.push_back(r);
 	}
 	return 0;

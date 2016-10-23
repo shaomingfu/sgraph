@@ -24,6 +24,7 @@ public:
 	vector<int> abl;	// abundance label
 
 	// features
+	string seq;	// sequence
 	vector<int> s;		// abundance
 	vector<double> q;	// ave-quality
 	fscore fs20;		// window 20 scores
@@ -47,7 +48,6 @@ public:
 
 	bool qualify();
 	int write_samples(ofstream &fout);
-	int write_abundance(ofstream &fout);
 };
 
 #endif
