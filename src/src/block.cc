@@ -205,11 +205,12 @@ int block::build_features()
 
 bool block::qualify()
 {
-	if(ltype == true) return false;
-	if(rtype == true) return false;
 	if(s.size() < min_sample_length) return false;
 
 	return true;
+
+	if(ltype == true) return false;
+	if(rtype == true) return false;
 
 	double ave, dev;
 	evaluate(0, s.size(), ave, dev);
