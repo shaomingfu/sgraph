@@ -46,8 +46,10 @@ public:
 	int build_feature_score(fscore &fs);
 	int build_features();
 
-	bool qualify();
+	bool qualify_boundary_training();
+	bool qualify_abundance_training();
 	int write_samples(ofstream &fout);
+	int write_index();
 };
 
 #endif

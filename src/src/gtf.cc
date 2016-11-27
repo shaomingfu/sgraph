@@ -10,7 +10,7 @@ gtf::gtf(const string &file)
 {
 	build_boundary_positions();
 	build_interval_map();
-	print();
+	//print();
 }
 
 gtf::~gtf()
@@ -34,7 +34,7 @@ int gtf::build_boundary_positions()
 
 			//printf("transcript %d [%d-%d), expression = %d\n", k, p.first, p.second, t.expression);
 
-			if(t.expression < min_transcript_expression) continue;
+			if(t.coverage < min_transcript_expression) continue;
 
 			if(mss.find(chrm) == mss.end())
 			{
@@ -73,7 +73,7 @@ int gtf::build_interval_map()
 		for(int k = 0; k < g.transcripts.size(); k++)
 		{
 			transcript &t = g.transcripts[k];
-			int abd = t.expression;
+			int abd = t.coverage;
 
 			for(int e = 0; e < t.exons.size(); e++)
 			{

@@ -203,20 +203,25 @@ int block::build_features()
 	return 0;
 }
 
-bool block::qualify()
+bool block::qualify_boundary_training()
 {
 	if(s.size() < min_sample_length) return false;
+	else return true;
+}
 
-	return true;
+bool block::qualify_abundance_training()
+{
+	if(qualify_boundary_training() == false) return false;
 
-	if(ltype == true) return false;
-	if(rtype == true) return false;
+	bool b = false;
+	for(int i = 0; i < labels.size(); i++)
+	{
+		if(labels[i] == 0) b = true;
+		if(labels[i] == 2) b = true;
+		if(b == true) break;
+	}
 
-	double ave, dev;
-	evaluate(0, s.size(), ave, dev);
-	if(ave < min_region_coverage) return false;
-
-	return true;
+	if(b == false) return false;
 
 	int cnt = 0;
 	for(int i = 0; i < abd.size(); i++)
@@ -224,15 +229,30 @@ bool block::qualify()
 		if(abd[i] >= min_transcript_expression) cnt++;
 	}
 	
-	if(cnt * 1.0 / abd.size() < 0.5) return false;
+	if(cnt * 1.0 / abd.size() < 0.8) return false;
 	else return true;
+}
+
+int block::write_index()
+{
+	assert(s.size() == q.size());
+
+	if(qualify_boundary_training() == false) return 0;
+
+	block::index++;
+
+	if(qualify_abundance_training() == false) return 0;
+
+	printf("abundance-training-index %d\n", index);
+
+	return 0;
 }
 
 int block::write_samples(ofstream &fout)
 {
 	assert(s.size() == q.size());
 
-	if(qualify() == false) return 0;
+	if(qualify_boundary_training() == false) return 0;
 
 	block::index++;
 	//printf("# sample-id = %d, length = %lu, location = %s:%d-%lu\n", block::index, s.size(), chrm.c_str(), pos, pos + s.size());
@@ -288,6 +308,10 @@ int block::write_samples(ofstream &fout)
 		else fout << "0 ";
 	}
 	fout << "\n";
+
+	if(qualify_abundance_training() == false) return 0;
+
+	printf("abundance-training-index %d\n", index);
 
 	return 0;
 }
