@@ -3,7 +3,10 @@ bin_PROGRAMS=mwutest
 mwutest_CPPFLAGS = -pg
 mwutest_LDFLAGS = -pg
 
-mwutest_SOURCES = alglibinternal.cc alglibinternal.h \
+mwutest_SOURCES = block.cc block.h \
+				  predictor.cc predictor.h \
+				  fscore.cc fscore.h \
+				  alglibinternal.cc alglibinternal.h \
 				  alglibmisc.cc alglibmisc.h \
 				  ap.cc ap.h \
 				  dataanalysis.cc dataanalysis.h \

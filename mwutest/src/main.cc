@@ -1,10 +1,26 @@
-#include <string>
 #include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <vector>
+#include <iostream>
+#include <ctime>
 
-#include "mwu.h"
+#include "predictor.h"
 
-int main(int argc, char **argv)
+using namespace std;
+
+int main(int argc, const char **argv)
 {
-	test_mwu();
-	return 0;
+	if(argc == 2)
+	{
+		predictor p;
+		p.process(argv[1]);
+	}
+	else 
+	{
+		printf("%s: <sample-file>\n", argv[0]);
+		return 0;
+	}
+
+    return 0;
 }
