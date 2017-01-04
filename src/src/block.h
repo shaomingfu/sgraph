@@ -31,15 +31,8 @@ public:
 	fscore fs50;		// window 50 scores
 	fscore fs100;		// window 100 scores
 
-	// native prediction
-	vector<double> pr1;		// probablity of being start
-	vector<double> pr2;		// probablity of being end
-	vector<double> pr3;		// probablity of being middle
-
 public:
 	int clear();
-	int predict();
-	int predict0();
 	int evaluate(int a, int b, double &ave, double &dev);
 	int build_labels(const set<int32_t> &ss, const set<int32_t> &tt);
 	int build_abundance(const join_interval_map &jmap);

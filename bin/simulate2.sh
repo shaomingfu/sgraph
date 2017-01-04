@@ -4,19 +4,19 @@
 #./purify.gtf.pl $dir/p0.gtf > $dir/p1.gtf
 #./fix.gtf.sh $dir/p1.gtf > $dir/p2.gtf
 
-dir=`pwd`/disk19/human
+dir=`pwd`/disk19/mouse
 mkdir -p $dir
 echo "V8B" > $dir/version
 
-num=10
+num=9
 
 #genome=/home/mingfus/data/transcriptomics/iGenomes/Homo.sapiens/GRCh38/Sequence/Chromosomes/
 #gtfdir=/home/mingfus/data/transcriptomics/iGenomes/Homo.sapiens/GRCh38/Annotation/Genes/
-genome=/home/mingfus/data/repositories/scallop/data/ensembl/human/chromosomes/
-gtfdir=/home/mingfus/data/repositories/scallop/data/ensembl/human/gtf
+genome=/home/mingfus/data/repositories/scallop/data/ensembl/mouse/chromosomes/
+gtfdir=/home/mingfus/data/repositories/scallop/data/ensembl/mouse/gtf
 gtf1=$gtfdir/p2.gtf
 gtf2=$gtfdir/p2_sorted.gtf
-index=/home/mingfus/data/transcriptomics/HISAT2/indexes/grch38/genome
+index=/home/mingfus/data/transcriptomics/HISAT2/indexes/grcm38/genome
 
 tmpdir=/home/mingfus/data/repositories/sgraph/bin/disk19/flux.tmp/
 mkdir -p $tmpdir

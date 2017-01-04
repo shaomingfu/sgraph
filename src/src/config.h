@@ -34,15 +34,14 @@ extern uint32_t min_max_splice_boundary_qual;
 extern double min_average_overlap;
 extern int min_max_region_overlap;
 extern int min_sample_length;
-extern double min_transcript_expression;
 extern double min_region_coverage;
+extern double min_transcript_expression;
+extern int index_prefix;
 
 extern vector<double> abundance_labels;
 
-
 // load and parse
 int locate_label(double abd);
-int load_config(const char * conf_file);
 int parse_arguments(int argc, const char ** argv);
 
 #endif
