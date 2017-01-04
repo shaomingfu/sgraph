@@ -1,0 +1,5 @@
+*.o
+mwutest
+Makefile
+Makefile.in
+*.Po
