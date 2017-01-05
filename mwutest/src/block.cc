@@ -1,6 +1,7 @@
 #include "block.h"
 #include <cassert>
 #include <cmath>
+#include <cfloat>
 
 int block::index = 0;
 
@@ -88,4 +89,28 @@ int block::evaluate(int a, int b, double &ave, double &dev)
 	dev = sqrt(var / (b - a));
 
 	return 0;
+}
+
+int block::split(int a, int b)
+{
+	assert(a >= 0 && a < s.size());
+	assert(b >= 0 && b < s.size());
+	if(b - a <= 20) return -1;
+
+	double min_mse = DBL_MAX;
+	int mink = -1;
+	for(int k = a + 1; k < b; k++)
+	{
+		double ave1, dev1;
+		double ave2, dev2;
+		evaluate(a, k, ave1, dev1);
+		evaluate(k, b, ave2, dev2);
+		double var1 = dev1 * dev1 * (k - a);
+		double var2 = dev2 * dev2 * (b - k);
+		double mse = var1 + var2;
+		if(mse >= min_mse) continue;
+		min_mse = mse;
+		mink = k;
+	}
+	return mink;
 }

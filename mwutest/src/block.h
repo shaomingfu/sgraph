@@ -24,6 +24,14 @@ public:
 	fscore fs50;		// window 50 scores
 	fscore fs100;		// window 100 scores
 
+	vector<int> seqa;	// seqA
+	vector<int> seqc;	// seqC
+	vector<int> seqg;	// seqG
+	vector<int> seqt;	// seqT
+
+	vector<int> pstart;	// whether start
+	vector<int> pend;	// whether end
+
 	// native prediction
 	vector<double> pr1;		// probablity of being start
 	vector<double> pr2;		// probablity of being end
@@ -31,7 +39,8 @@ public:
 
 public:
 	int predict();
-	int evaluate(int s, int t, double &ave, double &dev);
+	int evaluate(int a, int b, double &ave, double &dev);
+	int split(int a, int b);
 };
 
 #endif

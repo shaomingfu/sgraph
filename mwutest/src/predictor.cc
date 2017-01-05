@@ -111,6 +111,38 @@ int predictor::process(const string &file)
 		sstr<<line.c_str();
 		while(sstr>>f) b.fs100.vb.push_back(f);
 
+		// for sequences A, C, G, and T
+		getline(fin, line);
+		sstr.clear();
+		sstr<<line.c_str();
+		while(sstr>>k) b.seqa.push_back(k);
+
+		getline(fin, line);
+		sstr.clear();
+		sstr<<line.c_str();
+		while(sstr>>k) b.seqc.push_back(k);
+
+		getline(fin, line);
+		sstr.clear();
+		sstr<<line.c_str();
+		while(sstr>>k) b.seqg.push_back(k);
+
+		getline(fin, line);
+		sstr.clear();
+		sstr<<line.c_str();
+		while(sstr>>k) b.seqt.push_back(k);
+
+		// for boundaries
+		getline(fin, line);
+		sstr.clear();
+		sstr<<line.c_str();
+		while(sstr>>k) b.pstart.push_back(k);
+
+		getline(fin, line);
+		sstr.clear();
+		sstr<<line.c_str();
+		while(sstr>>k) b.pend.push_back(k);
+
 		b.predict();
 	}
 	return 0;
