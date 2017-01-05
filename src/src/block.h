@@ -16,8 +16,8 @@ public:
 	string chrm;
 	int32_t pos;
 	static int index;
-	bool ltype;
-	bool rtype;
+	int ltype;
+	int rtype;
 
 	vector<int> labels;	// labels
 	vector<int> abd;	// real abundance

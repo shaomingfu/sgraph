@@ -37,13 +37,17 @@ int region::build_block(block &b)
 		b.q.push_back(q);
 	}
 
-	b.seq = fa.get_seq(chrm, lcore, rcore - lcore);
-
+	/*
 	if(ltype == START_BOUNDARY) b.ltype = true;
 	else b.ltype = false;
-
 	if(rtype == END_BOUNDARY) b.rtype = true;
 	else b.rtype = false;
+	*/
+
+
+	b.ltype = ltype;
+	b.rtype = rtype;
+	b.seq = fa.get_seq(chrm, lcore, rcore - lcore);
 
 	return 0;
 }

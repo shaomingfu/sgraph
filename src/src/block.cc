@@ -83,8 +83,10 @@ int block::build_labels(const set<int32_t> &ss, const set<int32_t> &tt)
 		int label = 1;
 		if(ss.find(p) != ss.end()) label = 2;
 		if(tt.find(p) != tt.end()) label = 0;
+		/* TODO important
 		if(i == 0 && ltype == true) label = 2;
 		if(i == s.size() - 1 && rtype == true) label = 0;
+		*/
 		labels.push_back(label);
 	}
 	return 0;
@@ -210,10 +212,21 @@ int block::write_samples(ofstream &fout)
 	}
 	fout << "\n";
 
+	// write boundaries features
+	if(ltype == START_BOUNDARY) fout<< "1 ";
+	else fout<<"0 ";
+	for(int i = 1; i < s.size(); i++) fout<<"0 ";
+	fout << "\n";
+
+	for(int i = 1; i < s.size(); i++) fout<<"0 ";
+	if(rtype == END_BOUNDARY) fout<< "1 ";
+	else fout<<"0 ";
+	fout << "\n";
+
+	// write abundance training index
 	if(qualify_abundance_training() == false) return 0;
 
 	printf("abundance-training-index %d\n", index);
 
 	return 0;
 }
-
