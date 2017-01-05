@@ -1,11 +1,122 @@
 #include "block.h"
+#include "config.h"
+#include "mwu.h"
 #include <cassert>
 #include <cmath>
 #include <cfloat>
+#include <algorithm>
 
 int block::index = 0;
 
 int block::predict()
+{
+	return predict_with_binomial();
+}
+
+int block::predict_with_mwu()
+{
+	iterate(0, s.size());
+
+	if(pstart[0] == 1) blist.push_back(PI(0, START));
+	if(pend[pend.size() - 1] == 1) blist.push_back(PI(pend.size() - 1, END));
+
+	int start1 = 0, start2 = 0, start3 = 0;
+	int end1 = 0, end2 = 0, end3 = 0;
+
+	align_boundaries(START, start1, start3);
+	align_boundaries(END, end1, end3);
+
+	for(int i = 0; i < blist.size(); i++) 
+	{
+		if(blist[i].second == START) start2++;
+		if(blist[i].second == END) end2++;
+	}
+
+	printf("sample %d: positions = %lu, START = %d / %d / %d, END = %d / %d / %d\n", 
+			index,
+			labels.size(), 
+			start1, start2, start3,
+			end1, end2, end3);
+
+	return 0;
+}
+
+int block::split(int a, int b)
+{
+	assert(a >= 0 && a < s.size());
+	assert(b >= 0 && b < s.size());
+	if(b - a <= 20) return -1;
+
+	double min_mse = DBL_MAX;
+	int mink = -1;
+	for(int k = a + 1; k < b; k++)
+	{
+		double ave1, dev1;
+		double ave2, dev2;
+		evaluate(a, k, ave1, dev1);
+		evaluate(k, b, ave2, dev2);
+		double var1 = dev1 * dev1 * (k - a);
+		double var2 = dev2 * dev2 * (b - k);
+		double mse = var1 + var2;
+		if(mse >= min_mse) continue;
+		min_mse = mse;
+		mink = k;
+	}
+	return mink;
+}
+
+int block::test_mwu(int a, int b, int k)
+{
+	vector<int> v1;
+	vector<int> v2;
+	v1.push_back(s[a]);
+	v2.push_back(s[k]);
+	for(int i = a + 1; i < k; i++)
+	{
+		if(s[i] == v1.back()) continue;	
+		v1.push_back(s[i]);
+	}
+	for(int i = k + 1; i < b; i++)
+	{
+		if(s[i] == v2.back()) continue;	
+		v2.push_back(s[i]);
+	}
+	double left_pvalue, right_pvalue;
+	compute_mann_whitney_pvalue(v1, v2, left_pvalue, right_pvalue);
+
+	if(left_pvalue < max_mwu_pvalue) return START;
+	if(right_pvalue < max_mwu_pvalue) return END;
+	return MIDDLE;	
+}
+
+int block::iterate(int a, int b)
+{
+	if(b - a <= 20) return 0;
+	int k = split(a, b);
+	if(k < a || k >= b) return 0;
+	int f = test_mwu(a, b, k);
+	if(f == MIDDLE) return 0;
+
+	blist.push_back(PI(k, f));
+
+	int k1 = k, k2 = k;
+	for(int k2 = k; k2 < b - 1; k2++) 
+	{
+		if(f == START && s[k2] > s[k2 + 1]) break;
+		if(f == END && s[k2] < s[k2 + 1]) break;
+	}
+	for(int k1 = k; k1 >= a + 1; k1++)
+	{
+		if(f == START && s[k1 - 1] > s[k1]) break;
+		if(f == END && s[k1 - 1] < s[k1]) break;
+	}
+
+	iterate(a, k1);
+	iterate(k2, b);
+	return 0;
+}
+
+int block::predict_with_binomial()
 {
 	block::index++;
 	//printf("# sample-id = %d, length = %lu, location = %s:%d-%lu\n", block::index, s.size(), chrm.c_str(), pos, pos + s.size());
@@ -91,26 +202,50 @@ int block::evaluate(int a, int b, double &ave, double &dev)
 	return 0;
 }
 
-int block::split(int a, int b)
+int block::align_boundaries(int ff, int &ncorrect, int &nlabel)
 {
-	assert(a >= 0 && a < s.size());
-	assert(b >= 0 && b < s.size());
-	if(b - a <= 20) return -1;
-
-	double min_mse = DBL_MAX;
-	int mink = -1;
-	for(int k = a + 1; k < b; k++)
+	vector<PI> vv;
+	for(int i = 0; i < labels.size(); i++)
 	{
-		double ave1, dev1;
-		double ave2, dev2;
-		evaluate(a, k, ave1, dev1);
-		evaluate(k, b, ave2, dev2);
-		double var1 = dev1 * dev1 * (k - a);
-		double var2 = dev2 * dev2 * (b - k);
-		double mse = var1 + var2;
-		if(mse >= min_mse) continue;
-		min_mse = mse;
-		mink = k;
+		if(labels[i] != ff) continue;
+		vv.push_back(PI(i, -1));
 	}
-	return mink;
+	nlabel = vv.size();
+	ncorrect = 0;
+
+	for(int i = 0; i < blist.size(); i++)
+	{
+		if(blist[i].second != ff) continue;
+		vv.push_back(PI(blist[i].first, i));
+	}
+
+	sort(vv.begin(), vv.end());
+
+	set<int> s;
+	for(int i = 0; i < vv.size(); i++)
+	{
+		int p = vv[i].first;
+		int k = vv[i].second;
+		if(k == -1) continue;
+
+		int p1 = max_correct_distance * 2;
+		int p2 = max_correct_distance * 2;
+
+		if(i >= 1 && vv[i - 1].second == -1 && s.find(i - 1) == s.end()) p1 = p - vv[i - 1].first;
+		if(i < vv.size() - 1 && vv[i + 1].second == -1 && s.find(i + 1) == s.end()) p2 = vv[i + 1].first - p;
+
+		if(p1 < max_correct_distance && p1 <= p2)
+		{
+			s.insert(i - 1);
+			ncorrect++;
+		}
+		if(p2 < max_correct_distance && p2 < p1)
+		{
+			s.insert(i + 1);
+			ncorrect++;
+		}
+	}
+	return 0;
 }
+
+

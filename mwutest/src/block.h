@@ -9,6 +9,8 @@
 
 using namespace std;
 
+typedef pair<int, int> PI;
+
 class block
 {
 public:
@@ -33,14 +35,21 @@ public:
 	vector<int> pend;	// whether end
 
 	// native prediction
-	vector<double> pr1;		// probablity of being start
-	vector<double> pr2;		// probablity of being end
-	vector<double> pr3;		// probablity of being middle
+	vector<double> pr1;	// probablity of being start
+	vector<double> pr2;	// probablity of being end
+	vector<double> pr3;	// probablity of being middle
+
+	vector<PI> blist;	// predicted boundaries
 
 public:
 	int predict();
-	int evaluate(int a, int b, double &ave, double &dev);
+	int predict_with_binomial();
+	int predict_with_mwu();
+	int iterate(int a, int b);
 	int split(int a, int b);
+	int test_mwu(int a, int b, int k);
+	int align_boundaries(int ff, int &ncorrect, int &nlabel);
+	int evaluate(int a, int b, double &ave, double &dev);
 };
 
 #endif

@@ -31,7 +31,7 @@ string vector2string(const vector<int> &x){
 	return result_str;
 }
 
-double compute_mann_whitney_pvalue(const vector<int> &x, const vector<int> &y){
+int compute_mann_whitney_pvalue(const vector<int> &x, const vector<int> &y, double &left_pvalue, double &right_pvalue){
 	
 	real_1d_array x1 = vector2string(x).c_str();
 	real_1d_array y1 = vector2string(y).c_str();
@@ -43,11 +43,16 @@ double compute_mann_whitney_pvalue(const vector<int> &x, const vector<int> &y){
 
 	mannwhitneyutest(x1,n,y1,m,bothtails,lefttail,righttail);	
 
+	left_pvalue = lefttail;
+	right_pvalue = righttail;
+	return 0;
+
+	/*
 	printf("%.5f\n", double(bothtails));
    	printf("%.5f\n", double(lefttail));
    	printf("%.5f\n", double(righttail));
-    
 	return double(bothtails);
+	*/
 }
 
 int test_mwu()
@@ -57,7 +62,9 @@ int test_mwu()
 
 	vector<int> x(xx, xx + sizeof(xx) / sizeof(int));
 	vector<int> y(yy, yy + sizeof(yy) / sizeof(int));
-	double pvalue = compute_mann_whitney_pvalue(x, y);
+
+	double left, right;
+	int pvalue = compute_mann_whitney_pvalue(x, y, left, right);
 
 	return 0;
 }
