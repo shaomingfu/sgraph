@@ -41,6 +41,13 @@ public:
 
 	vector<PI> blist;	// predicted boundaries
 
+	int start1;
+	int start2;
+	int start3;
+	int end1;
+	int end2;
+	int end3;
+
 public:
 	int predict();
 	int predict_with_binomial();

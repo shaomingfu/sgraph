@@ -6,6 +6,7 @@ mwutest_LDFLAGS = -pg
 mwutest_SOURCES = block.cc block.h \
 				  predictor.cc predictor.h \
 				  fscore.cc fscore.h \
+				  config.h config.cc \
 				  alglibinternal.cc alglibinternal.h \
 				  alglibmisc.cc alglibmisc.h \
 				  ap.cc ap.h \

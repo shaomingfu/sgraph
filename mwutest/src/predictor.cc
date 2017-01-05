@@ -15,6 +15,9 @@ int predictor::process(const string &file)
 	int k;
 	double f;
 	int index = 0;
+
+	int start1 = 0, start2 = 0, start3 = 0;
+	int end1 = 0, end2 = 0, end3 = 0;
 	while(getline(fin, line))
 	{
 		if(line[0] != '#') continue;
@@ -144,7 +147,21 @@ int predictor::process(const string &file)
 		while(sstr>>k) b.pend.push_back(k);
 
 		b.predict();
+
+		start1 += b.start1;
+		start2 += b.start2;
+		start3 += b.start2;
+		end1 += b.end1;
+		end2 += b.end2;
+		end3 += b.end2;
 	}
+
+	printf("summary START = %d / %d / %d (corrrect / prediction / label), sensitivity = %.3lf, precision = %.3lf\n", 
+			start1, start2, start3, start1 * 1.0 / start3, start1 * 1.0 / start2);
+
+	printf("summary END = %d / %d / %d (corrrect / prediction / label), sensitivity = %.3lf, precision = %.3lf\n", 
+			end1, end2, end3, end1 * 1.0 / end3, end1 * 1.0 / end2);
+
 	return 0;
 }
 

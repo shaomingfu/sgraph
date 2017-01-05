@@ -20,8 +20,8 @@ int block::predict_with_mwu()
 	if(pstart[0] == 1) blist.push_back(PI(0, START));
 	if(pend[pend.size() - 1] == 1) blist.push_back(PI(pend.size() - 1, END));
 
-	int start1 = 0, start2 = 0, start3 = 0;
-	int end1 = 0, end2 = 0, end3 = 0;
+	start1 = start2 = start3 = 0;
+	end1 = end2 = end3 = 0;
 
 	align_boundaries(START, start1, start3);
 	align_boundaries(END, end1, end3);
