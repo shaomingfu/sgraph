@@ -150,10 +150,10 @@ int predictor::process(const string &file)
 
 		start1 += b.start1;
 		start2 += b.start2;
-		start3 += b.start2;
+		start3 += b.start3;
 		end1 += b.end1;
 		end2 += b.end2;
-		end3 += b.end2;
+		end3 += b.end3;
 	}
 
 	printf("summary START = %d / %d / %d (corrrect / prediction / label), sensitivity = %.3lf, precision = %.3lf\n", 

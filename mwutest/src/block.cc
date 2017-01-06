@@ -10,12 +10,12 @@ int block::index = 0;
 
 int block::predict()
 {
-	return predict_with_binomial();
+	return predict_with_mwu();
 }
 
 int block::predict_with_mwu()
 {
-	iterate(0, s.size());
+	//iterate(0, s.size());
 
 	if(pstart[0] == 1) blist.push_back(PI(0, START));
 	if(pend[pend.size() - 1] == 1) blist.push_back(PI(pend.size() - 1, END));
@@ -44,7 +44,7 @@ int block::predict_with_mwu()
 int block::split(int a, int b)
 {
 	assert(a >= 0 && a < s.size());
-	assert(b >= 0 && b < s.size());
+	assert(b > 0 && b <= s.size());
 	if(b - a <= 20) return -1;
 
 	double min_mse = DBL_MAX;
@@ -91,6 +91,8 @@ int block::test_mwu(int a, int b, int k)
 
 int block::iterate(int a, int b)
 {
+	//printf("iterate [%d, %d)\n", a, b);
+
 	if(b - a <= 20) return 0;
 	int k = split(a, b);
 	if(k < a || k >= b) return 0;
