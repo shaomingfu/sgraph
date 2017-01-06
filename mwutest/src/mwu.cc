@@ -9,7 +9,6 @@
 //#include <fstream>
 
 #include "mwu.h"
-#include "stdafx.h"
 #include "statistics.h"
 #include "interpolation.h"
 

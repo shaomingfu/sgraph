@@ -21,5 +21,4 @@ mwutest_SOURCES = block.cc block.h \
 				  solvers.cc solvers.h \
 				  specialfunctions.cc specialfunctions.h \
 				  statistics.cc statistics.h \
-				  stdafx.h \
 				  main.cc 
