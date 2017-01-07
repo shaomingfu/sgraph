@@ -10,7 +10,7 @@ gtf::gtf(const string &file)
 {
 	build_boundary_positions();
 	build_interval_map();
-	//print();
+	print();
 }
 
 gtf::~gtf()
@@ -128,21 +128,28 @@ int gtf::build_interval_map()
 
 int gtf::print()
 {
+	int cnt1 = 0;
+	int cnt2 = 0;
 	for(MSSI::iterator it = mss1.begin(); it != mss1.end(); it++)
 	{
-		printf("map of chrm %s has %lu start positions on positive strands\n", it->first.c_str(), it->second.size());
+		printf("#map of chrm %s has %lu start positions on positive strands\n", it->first.c_str(), it->second.size());
+		cnt1 += it->second.size();
 	}
 	for(MSSI::iterator it = mss2.begin(); it != mss2.end(); it++)
 	{
-		printf("map of chrm %s has %lu start positions on negative strands\n", it->first.c_str(), it->second.size());
+		printf("#map of chrm %s has %lu start positions on negative strands\n", it->first.c_str(), it->second.size());
+		cnt1 += it->second.size();
 	}
 	for(MSSI::iterator it = mtt1.begin(); it != mtt1.end(); it++)
 	{
-		printf("map of chrm %s has %lu end positions on positive strands\n", it->first.c_str(), it->second.size());
+		printf("#map of chrm %s has %lu end positions on positive strands\n", it->first.c_str(), it->second.size());
+		cnt2 += it->second.size();
 	}
 	for(MSSI::iterator it = mtt2.begin(); it != mtt2.end(); it++)
 	{
-		printf("map of chrm %s has %lu end positions on positive strands\n", it->first.c_str(), it->second.size());
+		printf("#map of chrm %s has %lu end positions on positive strands\n", it->first.c_str(), it->second.size());
+		cnt2 += it->second.size();
 	}
+	printf("#total %d start boundaries, %d end boundaries\n", cnt1, cnt2);
 	return 0;
 }

@@ -38,11 +38,13 @@ int assembler::process(const string &file, const string &sample_file)
 		if(bb1.get_num_hits() > 0 && (bb1.get_rpos() + min_bundle_gap < p.pos || p.tid != bb1.get_tid()))
 		{
 			process_bundle(bb1, h);
+			return 0;	// TEST
 		}
 
 		if(bb2.get_num_hits() > 0 && (bb2.get_rpos() + min_bundle_gap < p.pos || p.tid != bb2.get_tid()))
 		{
 			process_bundle(bb2, h);
+			return 0;	// TEST
 		}
 
 		hit ht(b);

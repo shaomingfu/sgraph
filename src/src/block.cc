@@ -86,7 +86,7 @@ int block::build_labels()
 	}
 	for(int i = 0; i < tt.size(); i++)
 	{
-		int k = ss[i] - pos;
+		int k = tt[i] - pos;
 		if(k >= s.size()) labels[s.size() - 1] = 1;
 		else if(k >= 0) labels[k] = 1;
 	}
