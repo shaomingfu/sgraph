@@ -16,28 +16,6 @@ assembler::~assembler()
 {
 }
 
-int assembler::print()
-{
-	for(MSSI::iterator it = gf.mss.begin(); it != gf.mss.end(); it++)
-	{
-		set<int32_t> &s = it->second;
-		for(set<int32_t>::iterator i = s.begin(); i != s.end(); i++)
-		{
-			printf("left %s %d\n", it->first.c_str(), *i);
-		}
-	}
-	for(MSSI::iterator it = gf.mtt.begin(); it != gf.mtt.end(); it++)
-	{
-		set<int32_t> &s = it->second;
-		for(set<int32_t>::iterator i = s.begin(); i != s.end(); i++)
-		{
-			printf("right %s %d\n", it->first.c_str(), *i);
-		}
-	}
-	return 0;
-}
-
-
 int assembler::process(const string &file, const string &sample_file)
 {
     samFile *fn = sam_open(file.c_str(), "r");
@@ -101,24 +79,29 @@ int assembler::process_bundle(bundle_base &bb, bam_hdr_t *h)
 	bundle bd(bb, fa);
 	bd.build();
 
-	set<int32_t> s1;
-	set<int32_t> s2;
+	set<int32_t> ss;
+	set<int32_t> tt;
 	join_interval_map jmap0;
 
-	set<int32_t> &ss1 = s1;
-	set<int32_t> &ss2 = s2;
+	set<int32_t> &sss = ss;
+	set<int32_t> &ttt = tt;
 	join_interval_map &jmap = jmap0;
 
 	//printf("bundle for chrm of %s\n", chrm.c_str());
 
-	if(gf.mss.find(chrm) != gf.mss.end()) ss1 = gf.mss[chrm];
-	if(gf.mtt.find(chrm) != gf.mtt.end()) ss2 = gf.mtt[chrm];
+	if(bd.strand == '+' && gf.mss1.find(chrm) != gf.mss1.end()) sss = gf.mss1[chrm];
+	if(bd.strand == '-' && gf.mss2.find(chrm) != gf.mss2.end()) sss = gf.mss2[chrm];
+	if(bd.strand == '+' && gf.mtt1.find(chrm) != gf.mtt1.end()) ttt = gf.mtt1[chrm];
+	if(bd.strand == '-' && gf.mtt2.find(chrm) != gf.mtt2.end()) ttt = gf.mtt2[chrm];
 	if(gf.jmap.find(chrm) != gf.jmap.end()) jmap = gf.jmap[chrm];
+
+	bd.build_boundaries(sss, ttt);
+	bd.assign_boundaries();
 
 	for(int i = 0; i < bd.blocks.size(); i++)
 	{
 		block &b = bd.blocks[i];
-		b.build_labels(ss1, ss2);
+		b.build_labels();
 		b.build_abundance(jmap);
 		b.build_features();
 		b.write_samples(sample_fout);

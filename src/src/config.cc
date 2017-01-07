@@ -10,6 +10,7 @@ using namespace std;
 
 //// parameters
 
+int32_t max_correct_distance = 50;
 int32_t min_bundle_gap = 50;
 int min_num_hits_in_bundle = 20;
 int32_t min_splice_boundary_hits = 1;

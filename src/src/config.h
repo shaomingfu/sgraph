@@ -27,6 +27,7 @@ using namespace std;
 #define MIN_LEN_FLANK 1
 
 // user-defined parameters
+extern int32_t max_correct_distance;
 extern int32_t min_bundle_gap;
 extern int min_num_hits_in_bundle;
 extern int32_t min_splice_boundary_hits;

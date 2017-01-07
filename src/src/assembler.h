@@ -28,7 +28,6 @@ public:
 	int build_boundary_positions(const string &file);
 	int process_bundle(bundle_base &bb, bam_hdr_t *h);
 	int process(const string &file, const string &sample_file);
-	int print();
 };
 
 #endif

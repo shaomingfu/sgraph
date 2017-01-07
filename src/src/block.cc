@@ -11,6 +11,8 @@ int block::clear()
 	pos = -1;
 	s.clear();
 	q.clear();
+	ss.clear();
+	tt.clear();
 	return 0;
 }
 
@@ -68,6 +70,25 @@ int block::build_abundance(const join_interval_map &jmap)
 		else abd.push_back(it->second);
 		int l = locate_label(abd[i]);
 		abl.push_back(l);
+	}
+	return 0;
+}
+
+int block::build_labels()
+{
+	if(s.size() < min_sample_length) return 0;
+	labels.assign(s.size(), 1);
+	for(int i = 0; i < ss.size(); i++)
+	{
+		int k = ss[i] - pos;
+		if(k < 0) labels[0] = 2;
+		else if(k < s.size()) labels[k] = 2;
+	}
+	for(int i = 0; i < tt.size(); i++)
+	{
+		int k = ss[i] - pos;
+		if(k >= s.size()) labels[s.size() - 1] = 1;
+		else if(k >= 0) labels[k] = 1;
 	}
 	return 0;
 }

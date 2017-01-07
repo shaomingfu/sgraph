@@ -16,7 +16,7 @@ public:
 	bundle_base();
 	virtual ~bundle_base();
 
-protected:
+public:
 	int32_t tid;					// chromosome ID
 	string chrm;					// chromosome name
 	int32_t lpos;					// the leftmost boundary on reference

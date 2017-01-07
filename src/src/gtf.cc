@@ -19,8 +19,10 @@ gtf::~gtf()
 
 int gtf::build_boundary_positions()
 {
-	mss.clear();
-	mtt.clear();
+	mss1.clear();
+	mss2.clear();
+	mtt1.clear();
+	mtt2.clear();
 
 	for(int i = 0; i < gm.genes.size(); i++)
 	{
@@ -36,26 +38,53 @@ int gtf::build_boundary_positions()
 
 			if(t.coverage < min_transcript_expression) continue;
 
-			if(mss.find(chrm) == mss.end())
+			if(t.strand == '+')
 			{
-				set<int32_t> s;
-				s.insert(p.first);
-				mss.insert(PSSI(chrm, s));
-			}
-			else
-			{
-				mss[chrm].insert(p.first);
-			}
+				if(mss1.find(chrm) == mss1.end())
+				{
+					set<int32_t> s;
+					s.insert(p.first);
+					mss1.insert(PSSI(chrm, s));
+				}
+				else
+				{
+					mss1[chrm].insert(p.first);
+				}
 
-			if(mtt.find(chrm) == mtt.end())
-			{
-				set<int32_t> s;
-				s.insert(p.second);
-				mtt.insert(PSSI(chrm, s));
+				if(mtt1.find(chrm) == mtt1.end())
+				{
+					set<int32_t> s;
+					s.insert(p.second);
+					mtt1.insert(PSSI(chrm, s));
+				}
+				else
+				{
+					mtt1[chrm].insert(p.second);
+				}
 			}
-			else
+			else if(t.strand == '-')
 			{
-				mtt[chrm].insert(p.second);
+				if(mss2.find(chrm) == mss2.end())
+				{
+					set<int32_t> s;
+					s.insert(p.first);
+					mss2.insert(PSSI(chrm, s));
+				}
+				else
+				{
+					mss2[chrm].insert(p.first);
+				}
+
+				if(mtt2.find(chrm) == mtt2.end())
+				{
+					set<int32_t> s;
+					s.insert(p.second);
+					mtt2.insert(PSSI(chrm, s));
+				}
+				else
+				{
+					mtt2[chrm].insert(p.second);
+				}
 			}
 		}
 	}
@@ -99,13 +128,21 @@ int gtf::build_interval_map()
 
 int gtf::print()
 {
-	for(MSSI::iterator it = mss.begin(); it != mss.end(); it++)
+	for(MSSI::iterator it = mss1.begin(); it != mss1.end(); it++)
 	{
-		printf("map of chrm %s has %lu start positions\n", it->first.c_str(), it->second.size());
+		printf("map of chrm %s has %lu start positions on positive strands\n", it->first.c_str(), it->second.size());
 	}
-	for(MSSI::iterator it = mtt.begin(); it != mtt.end(); it++)
+	for(MSSI::iterator it = mss2.begin(); it != mss2.end(); it++)
 	{
-		printf("map of chrm %s has %lu end positions\n", it->first.c_str(), it->second.size());
+		printf("map of chrm %s has %lu start positions on negative strands\n", it->first.c_str(), it->second.size());
+	}
+	for(MSSI::iterator it = mtt1.begin(); it != mtt1.end(); it++)
+	{
+		printf("map of chrm %s has %lu end positions on positive strands\n", it->first.c_str(), it->second.size());
+	}
+	for(MSSI::iterator it = mtt2.begin(); it != mtt2.end(); it++)
+	{
+		printf("map of chrm %s has %lu end positions on positive strands\n", it->first.c_str(), it->second.size());
 	}
 	return 0;
 }

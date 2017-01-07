@@ -23,8 +23,10 @@ public:
 
 public:
 	genome gm;
-	MSSI mss;
-	MSSI mtt;
+	MSSI mss1;		// positive strand
+	MSSI mss2;		// negative strand
+	MSSI mtt1;
+	MSSI mtt2;
 	MSJIM jmap;
 
 protected:

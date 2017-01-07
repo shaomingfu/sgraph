@@ -22,6 +22,7 @@ int bundle::build()
 	infer_junctions();
 	build_regions();
 	build_blocks();
+	build_block_map();
 	return 0;
 }
 
@@ -138,7 +139,7 @@ int bundle::build_blocks()
 		region &r = regions[i];
 		block b;
 		r.build_block(b);
-		if(b.s.size() == 0) continue;
+		if(b.qualify_boundary_training() == false) continue;
 		blocks.push_back(b);
 	}
 	return 0;
@@ -157,4 +158,87 @@ int bundle::print(int index) const
 	}
 
 	return 0;
+}
+
+int bundle::build_boundaries(const set<int32_t>& ss, const set<int32_t> &tt)
+{
+	set<int32_t>::const_iterator it;
+	for(it = ss.begin(); it != ss.end(); it++)
+	{
+		int32_t p = (*it);
+		if(p < lpos - max_correct_distance) continue; 
+		if(p > rpos + max_correct_distance) continue;
+		mss.push_back(p);
+	}
+	for(it = tt.begin(); it != tt.end(); it++)
+	{
+		int32_t p = (*it);
+		if(p < lpos - max_correct_distance) continue; 
+		if(p > rpos + max_correct_distance) continue;
+		mtt.push_back(p);
+	}
+	return 0;
+}
+
+int bundle::assign_boundaries()
+{
+	for(int i = 0; i < mss.size(); i++)
+	{
+		int32_t p = mss[i];
+		int k = locate_block(p);
+		if(k < 0) continue;
+		if(k >= blocks.size()) continue;
+		blocks[k].ss.push_back(p);
+	}
+	for(int i = 0; i < mtt.size(); i++)
+	{
+		int32_t p = mtt[i];
+		int k = locate_block(p);
+		if(k < 0) continue;
+		if(k >= blocks.size()) continue;
+		blocks[k].tt.push_back(p);
+	}	
+	return 0;
+}
+
+int bundle::build_block_map()
+{
+	bmap.clear();
+	if(blocks.size() == 0) return 0;
+	int32_t p1 = 0;
+	for(int i = 0; i < blocks.size(); i++)
+	{
+		block &b = blocks[i];
+		bmap += make_pair(ROI(b.pos, b.pos + b.s.size()), i * 2 + 2);
+		int32_t p2 = b.pos;
+		if(p2 > p1) bmap += make_pair(ROI(p1, p2), i * 2 + 1);
+		p1 = b.pos + b.s.size();
+	}
+	bmap += make_pair(ROI(p1, INT32_MAX), (int)(blocks.size() * 2 + 1));
+	return 0;
+}
+
+int bundle::locate_block(int32_t x)
+{
+	SIMI it = bmap.find(ROI(x, x + 1));
+	if(it == bmap.end()) return -1;
+
+	int k = it->second;
+	if(k % 2 == 0) return k / 2 - 1;
+
+	int k1 = (k - 3) / 2;
+	int k2 = (k - 1) / 2;
+	if(k2 == 0) return 0;
+	if(k2 == blocks.size()) return blocks.size() - 1;
+	if(k1 < 0 || k2 >= blocks.size()) return -1;
+	
+	block &b1 = blocks[k1];
+	block &b2 = blocks[k2];
+	int32_t p1 = x - b1.pos - b1.s.size();
+	int32_t p2 = b2.pos - x;
+	assert(p1 >= 0);
+	assert(p2 >= 0);
+
+	if(p1 <= p2) return k1;
+	else return k2;
 }
