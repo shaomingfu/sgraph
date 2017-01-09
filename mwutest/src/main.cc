@@ -6,19 +6,22 @@
 #include <ctime>
 
 #include "predictor.h"
+#include "config.h"
 
 using namespace std;
 
 int main(int argc, const char **argv)
 {
-	if(argc == 2)
+	if(argc == 4)
 	{
 		predictor p;
+		max_mwu_pvalue = atof(argv[2]);
+		min_fold_change = atof(argv[3]);
 		p.process(argv[1]);
 	}
 	else 
 	{
-		printf("%s: <sample-file>\n", argv[0]);
+		printf("%s: <sample-file> <max-mwu-pvalue> <min-fold-change\n", argv[0]);
 		return 0;
 	}
 

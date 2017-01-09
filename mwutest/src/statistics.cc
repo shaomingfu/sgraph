@@ -8602,9 +8602,15 @@ void mannwhitneyutest(/* Real    */ ae_vector* x,
         mp = ae_exp(mannwhitneyu_usigma((u-mu)/sigma, n, m, _state), _state);
         p = 1-ae_exp(mannwhitneyu_usigma((u+1-mu)/sigma, n, m, _state), _state);
     }
+
+	// SHAOMINGFU
+
+	/*
     *bothtails = boundval(ae_maxreal(2*ae_minreal(p, mp, _state), 1.0E-4, _state), 0.0001, 0.2500, _state);
     *lefttail = boundval(ae_maxreal(mp, 1.0E-4, _state), 0.0001, 0.2500, _state);
     *righttail = boundval(ae_maxreal(p, 1.0E-4, _state), 0.0001, 0.2500, _state);
+	*/
+
     ae_frame_leave(_state);
 }
 

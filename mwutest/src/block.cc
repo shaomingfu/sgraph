@@ -15,22 +15,29 @@ int block::predict()
 
 int block::predict_with_mwu()
 {
-	//iterate(0, s.size());
+	/*
+	if(pstart[0] == 1) slist.push_back(0);
+	if(pend[pend.size() - 1] == 1) tlist.push_back(pend.size() - 1);
+	*/
 
-	if(pstart[0] == 1) blist.push_back(PI(0, START));
-	if(pend[pend.size() - 1] == 1) blist.push_back(PI(pend.size() - 1, END));
+	iterate(0, s.size());
+
+	sort(slist.begin(), slist.end());
+	sort(tlist.begin(), tlist.end());
+
+	/*
+	filter_boundaries(slist);
+	filter_boundaries(tlist);
+	*/
 
 	start1 = start2 = start3 = 0;
 	end1 = end2 = end3 = 0;
 
-	align_boundaries(START, start1, start3);
-	align_boundaries(END, end1, end3);
+	align_boundaries(START, slist, start1, start3);
+	align_boundaries(END, tlist, end1, end3);
 
-	for(int i = 0; i < blist.size(); i++) 
-	{
-		if(blist[i].second == START) start2++;
-		if(blist[i].second == END) end2++;
-	}
+	start2 = slist.size();
+	end2 = tlist.size();
 
 	printf("sample %d: positions = %lu, START = %d / %d / %d, END = %d / %d / %d\n", 
 			index,
@@ -45,7 +52,8 @@ int block::split(int a, int b)
 {
 	assert(a >= 0 && a < s.size());
 	assert(b > 0 && b <= s.size());
-	if(b - a <= 20) return -1;
+
+	if(b - a < min_test_interval_length) return -1;
 
 	double min_mse = DBL_MAX;
 	int mink = -1;
@@ -81,25 +89,45 @@ int block::test_mwu(int a, int b, int k)
 		if(s[i] == v2.back()) continue;	
 		v2.push_back(s[i]);
 	}
+
+	/*
+	sort(v1.begin(), v1.end());
+	sort(v2.begin(), v2.end());
+	*/
+
 	double left_pvalue, right_pvalue;
 	compute_mann_whitney_pvalue(v1, v2, left_pvalue, right_pvalue);
 
-	if(left_pvalue < max_mwu_pvalue) return START;
-	if(right_pvalue < max_mwu_pvalue) return END;
+	/*
+	for(int i = 0; i < v1.size(); i++) printf("%d ", v1[i]); printf("\n");
+	for(int i = 0; i < v2.size(); i++) printf("%d ", v2[i]); printf("\n");
+	printf("interval [%d, %d), k = %d, pvalue = (%e, %e)\n", a, b, k, left_pvalue, right_pvalue);
+	*/
+
+	double ave1, dev1;
+	double ave2, dev2;
+	evaluate(a, k, ave1, dev1);
+	evaluate(k, b, ave2, dev2);
+
+	if(left_pvalue < max_mwu_pvalue && ave1 * min_fold_change < ave2) return START;
+	if(right_pvalue < max_mwu_pvalue && ave2 * min_fold_change < ave1) return END;
+
 	return MIDDLE;	
 }
 
 int block::iterate(int a, int b)
 {
-	//printf("iterate [%d, %d)\n", a, b);
+	int32_t k = split(a, b);
+	if(k == -1) return 0;
 
-	if(b - a <= 20) return 0;
-	int k = split(a, b);
-	if(k < a || k >= b) return 0;
 	int f = test_mwu(a, b, k);
 	if(f == MIDDLE) return 0;
 
-	blist.push_back(PI(k, f));
+	if(f == START && verify_boundary(k, slist) == false) return 0;
+	if(f == END && verify_boundary(k, tlist) == false) return 0;
+
+	if(f == START) slist.push_back(k);
+	if(f == END) tlist.push_back(k);
 
 	int k1 = k, k2 = k;
 	for(int k2 = k; k2 < b - 1; k2++) 
@@ -112,6 +140,9 @@ int block::iterate(int a, int b)
 		if(f == START && s[k1 - 1] > s[k1]) break;
 		if(f == END && s[k1 - 1] < s[k1]) break;
 	}
+
+	// TODO, only test 1 extra boundary
+	return 0;
 
 	iterate(a, k1);
 	iterate(k2, b);
@@ -204,7 +235,7 @@ int block::evaluate(int a, int b, double &ave, double &dev)
 	return 0;
 }
 
-int block::align_boundaries(int ff, int &ncorrect, int &nlabel)
+int block::align_boundaries(int ff, const vector<int> &list, int &ncorrect, int &nlabel)
 {
 	vector<PI> vv;
 	for(int i = 0; i < labels.size(); i++)
@@ -215,10 +246,9 @@ int block::align_boundaries(int ff, int &ncorrect, int &nlabel)
 	nlabel = vv.size();
 	ncorrect = 0;
 
-	for(int i = 0; i < blist.size(); i++)
+	for(int i = 0; i < list.size(); i++)
 	{
-		if(blist[i].second != ff) continue;
-		vv.push_back(PI(blist[i].first, i));
+		vv.push_back(PI(list[i], i));
 	}
 
 	sort(vv.begin(), vv.end());
@@ -250,4 +280,27 @@ int block::align_boundaries(int ff, int &ncorrect, int &nlabel)
 	return 0;
 }
 
+bool block::verify_boundary(int x, const vector<int> &list)
+{
+	for(int i = 0; i < list.size(); i++)
+	{
+		int d = (int)fabs(list[i] - x);
+		if(d < 2 * max_correct_distance) return false;
+	}
+	return true;
+}
 
+int block::filter_boundaries(vector<int> &list)
+{
+	if(list.size() == 0) return 0;
+	vector<int> v;
+	v.push_back(list[0]);
+	for(int i = 1; i < list.size(); i++)
+	{
+		int d = list[i] - v.back();
+		if(d < max_correct_distance) continue;
+		v.push_back(list[i]);
+	}
+	list = v;
+	return 0;
+}

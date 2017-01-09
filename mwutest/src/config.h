@@ -10,5 +10,7 @@ using namespace std;
 
 extern double max_mwu_pvalue;
 extern int max_correct_distance;
+extern int min_test_interval_length;
+extern double min_fold_change;
 
 #endif

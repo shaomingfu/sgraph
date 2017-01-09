@@ -39,7 +39,8 @@ public:
 	vector<double> pr2;	// probablity of being end
 	vector<double> pr3;	// probablity of being middle
 
-	vector<PI> blist;	// predicted boundaries
+	vector<int> slist;	// predicted start boundaries
+	vector<int> tlist;	// predicted end boundaries
 
 	int start1;
 	int start2;
@@ -55,7 +56,9 @@ public:
 	int iterate(int a, int b);
 	int split(int a, int b);
 	int test_mwu(int a, int b, int k);
-	int align_boundaries(int ff, int &ncorrect, int &nlabel);
+	bool verify_boundary(int x, const vector<int> &list);
+	int filter_boundaries(vector<int> &list);
+	int align_boundaries(int ff, const vector<int> &list, int &ncorrect, int &nlabel);
 	int evaluate(int a, int b, double &ave, double &dev);
 };
 
