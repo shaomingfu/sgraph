@@ -15,10 +15,8 @@ int block::predict()
 
 int block::predict_with_mwu()
 {
-	/*
 	if(pstart[0] == 1) slist.push_back(0);
 	if(pend[pend.size() - 1] == 1) tlist.push_back(pend.size() - 1);
-	*/
 
 	iterate(0, s.size());
 
@@ -142,7 +140,7 @@ int block::iterate(int a, int b)
 	}
 
 	// TODO, only test 1 extra boundary
-	return 0;
+	if(slist.size() + tlist.size() >= 3) return 0;
 
 	iterate(a, k1);
 	iterate(k2, b);
