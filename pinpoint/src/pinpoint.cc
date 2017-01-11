@@ -93,6 +93,8 @@ int pinpoint::load_sample()
 		getline(fsmp, line);
 		getline(fsmp, line);
 		getline(fsmp, line);
+		getline(fsmp, line);
+		getline(fsmp, line);
 
 		break;
 	}
