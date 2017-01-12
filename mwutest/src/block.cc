@@ -18,15 +18,10 @@ int block::predict_with_mwu()
 	if(pstart[0] == 1) slist.push_back(0);
 	if(pend[pend.size() - 1] == 1) tlist.push_back(pend.size() - 1);
 
-	iterate(0, s.size());
+	if(use_mwutest == true) iterate(0, s.size());
 
 	sort(slist.begin(), slist.end());
 	sort(tlist.begin(), tlist.end());
-
-	/*
-	filter_boundaries(slist);
-	filter_boundaries(tlist);
-	*/
 
 	start1 = start2 = start3 = 0;
 	end1 = end2 = end3 = 0;
