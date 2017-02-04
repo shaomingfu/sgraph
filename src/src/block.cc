@@ -87,8 +87,8 @@ int block::build_labels()
 	for(int i = 0; i < tt.size(); i++)
 	{
 		int k = tt[i] - pos;
-		if(k >= s.size()) labels[s.size() - 1] = 1;
-		else if(k >= 0) labels[k] = 1;
+		if(k >= s.size()) labels[s.size() - 1] = 0;
+		else if(k >= 0) labels[k] = 0;
 	}
 	return 0;
 }
@@ -204,31 +204,31 @@ int block::write_samples(ofstream &fout)
 	//for(int i = 0; i < abd.size(); i++) printf("%d ", abd[i]); printf("\n");
 
 	// write sequence
-	assert(seq.size() == s.size());
-	for(int i = 0; i < seq.size(); i++)
+	//assert(seq.size() == s.size());
+	for(int i = 0; i < s.size(); i++)
 	{
-		if(seq[i] == 'A') fout << "1 "; 
+		if(i < seq.size() && seq[i] == 'A') fout << "1 "; 
 		else fout << "0 ";
 	}
 	fout << "\n";
 
-	for(int i = 0; i < seq.size(); i++)
+	for(int i = 0; i < s.size(); i++)
 	{
-		if(seq[i] == 'C') fout << "1 "; 
+		if(i < seq.size() && seq[i] == 'C') fout << "1 "; 
 		else fout << "0 ";
 	}
 	fout << "\n";
 
-	for(int i = 0; i < seq.size(); i++)
+	for(int i = 0; i < s.size(); i++)
 	{
-		if(seq[i] == 'G') fout << "1 "; 
+		if(i < seq.size() && seq[i] == 'G') fout << "1 "; 
 		else fout << "0 ";
 	}
 	fout << "\n";
 
-	for(int i = 0; i < seq.size(); i++)
+	for(int i = 0; i < s.size(); i++)
 	{
-		if(seq[i] == 'T') fout << "1 "; 
+		if(i < seq.size() && seq[i] == 'T') fout << "1 "; 
 		else fout << "0 ";
 	}
 	fout << "\n";
@@ -246,8 +246,17 @@ int block::write_samples(ofstream &fout)
 
 	// write abundance training index
 	if(qualify_abundance_training() == false) return 0;
+	//printf("abundance-training-index %d\n", index);
 
-	printf("abundance-training-index %d\n", index);
+	return 0;
+}
 
+int block::print_labels()
+{
+	for(int i = 0; i < labels.size(); i++)
+	{
+		if(labels[i] == 0) printf("block %s:%d-%lu, end boundary at %d\n", chrm.c_str(), pos, pos + s.size(), i + pos);
+		if(labels[i] == 2) printf("block %s:%d-%lu, start boundary at %d\n", chrm.c_str(), pos, pos + s.size(), i + pos);
+	}
 	return 0;
 }

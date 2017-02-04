@@ -80,6 +80,7 @@ int bundle::infer_junctions()
 		if(it->second.max_qual < min_max_splice_boundary_qual) continue;
 		junctions.push_back(it->second);
 	}
+
 	return 0;
 }
 

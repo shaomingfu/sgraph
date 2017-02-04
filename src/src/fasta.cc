@@ -13,6 +13,8 @@ fasta::fasta(const string &d)
 
 string fasta::get_seq(const string &chr, int s, int l)
 {
+	if(dir == "") return "";
+
 	if(chr != chrm)
 	{
 		load_chrm(chr);
@@ -61,6 +63,7 @@ string fasta::get_seq(const string &chr, int s, int l)
 
 int fasta::load_chrm(const string &chr)
 {
+	if(dir == "") return 0;
 	if(chr == chrm) return 0;
 
 	string file = dir + "/" + chr + ".fa";
@@ -86,6 +89,5 @@ int fasta::load_chrm(const string &chr)
 	for(int k = 1; k < seq.size() - 1; k++) assert(seq[k].size() == seq[k - 1].size());
 
 	chrm = chr;
-
 	return 0;
 }

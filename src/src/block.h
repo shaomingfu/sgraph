@@ -47,6 +47,8 @@ public:
 	bool qualify_abundance_training();
 	int write_samples(ofstream &fout);
 	int write_index();
+
+	int print_labels();
 };
 
 #endif

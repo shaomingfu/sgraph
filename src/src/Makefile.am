@@ -1,12 +1,8 @@
 bin_PROGRAMS=sgraph
 
-GTFDIR = ../../lib/gtf/src
-UTILDIR = ../../lib/util/src
-GRAPHDIR = ../../lib/graph/src
-
-sgraph_CPPFLAGS = -pg -std=c++11 -I$(HTSLIB) -I$(GTFDIR) -I$(GRAPHDIR) -I$(UTILDIR) -I$(BOOST_HOME) 
-sgraph_LDFLAGS = -pg -L$(HTSLIB) -L$(GTFDIR) -L$(GRAPHDIR) -L$(UTILDIR) -pthread
-sgraph_LDADD = -lhts -lz -lgtf -lgraph -lutil
+sgraph_CPPFLAGS = -pg -std=c++11 -I$(HTSLIB) -I$(BOOST_HOME) 
+sgraph_LDFLAGS = -pg -L$(HTSLIB) -pthread
+sgraph_LDADD = -lhts -lz
 
 sgraph_SOURCES = interval_map.h interval_map.cc \
 				 fscore.h fscore.cc \
@@ -22,5 +18,10 @@ sgraph_SOURCES = interval_map.h interval_map.cc \
 				 assembler.h assembler.cc \
 				 gtf.h gtf.cc \
 				 fasta.h fasta.cc \
+				 util.h util.cc \
+				 item.h item.cc \
+				 gene.h gene.cc \
+				 genome.h genome.cc \
+				 transcript.h transcript.cc \
 				 main.cc
 

@@ -1,10 +1,11 @@
 #ifndef __CONFIG_H__
 #define __CONFIG_H__
 
-#include "util.h"
 #include <stdint.h>
 #include <map>
 #include <sstream>
+#include <vector>
+#include "util.h"
 
 using namespace std;
 
@@ -36,10 +37,15 @@ extern double min_average_overlap;
 extern int min_max_region_overlap;
 extern int min_sample_length;
 extern double min_region_coverage;
+
+// generating abundance labels
+extern vector<double> abundance_labels;
+
+// user-specified parameters
+extern string input_gtf_file;
+extern string input_fasta_dir;
 extern double min_transcript_expression;
 extern int index_prefix;
-
-extern vector<double> abundance_labels;
 
 // load and parse
 int locate_label(double abd);
