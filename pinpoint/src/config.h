@@ -17,4 +17,6 @@ extern bool extended;
 
 typedef pair<int, int> PI;
 
+int parse_arguments(int argc, const char ** argv);
+
 #endif

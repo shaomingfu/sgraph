@@ -10,23 +10,11 @@ using namespace std;
 
 int main(int argc, const char ** argv)
 {
-	if(argc != 6 && argc != 7) 
+	if(argc == 1) 
 	{
-		printf("usage: %s: \n\
-				<sample-file> \n\
-				<prediction-file> \n\
-				<probability-threshold> \n\
-				<half-window-size-for-average> \n\
-				<min-accept-expression> \n\
-				[extended]\n", argv[0]);
+		printf("usage: %s: <sample-file> <prediction-file> [-p probability-threshold] [-w window-size]\n", argv[0]);
 		return 0;
 	}
-
-	if(argc == 7) extended = true;
-
-	min_prob = atof(argv[3]);
-	block_size = 2 * atoi(argv[4]);
-	min_accept_expression = atof(argv[5]);
 
 	pinpoint pp(argv[1], argv[2]);
 	pp.solve();
