@@ -36,6 +36,7 @@ public:
 	int clear();
 	int process();
 	int print(int index);
+	int print_result(int index);
 
 private:
 	int qualify();

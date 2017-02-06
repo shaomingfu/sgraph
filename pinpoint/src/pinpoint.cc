@@ -113,7 +113,7 @@ bool pinpoint::process()
 		return true;
 	}
 
-	sp.print(index++);
+	sp.print_result(index++);
 
 	correct0 += sp.correct0;
 	correct1 += sp.correct1;
@@ -142,12 +142,12 @@ int pinpoint::solve()
 		if(b == false) break;
 	}
 
-	printf("summary label0 = %d / %d / %d (corrrect / prediction / label), sensitivity = %.3lf, precision = %.3lf\n", correct0, predict0, label0, correct0 * 1.0 / label0, correct0 * 1.0 / predict0);
-	printf("summary label2 = %d / %d / %d (corrrect / prediction / label), sensitivity = %.3lf, precision = %.3lf\n", correct2, predict2, label2, correct2 * 1.0 / label2, correct2 * 1.0 / predict2);
-	printf("summary label1 = %d / %d / %d (corrrect / prediction / label), sensitivity = %.3lf, precision = %.3lf\n", correct1, predict1, label1, correct1 * 1.0 / label1, correct1 * 1.0 / predict1);
-
 	abdratio /= nsample;
-	printf("summary abundance, %d samples with 0 or 2 labels, average deviation = %.3lf\n", nsample, abdratio);
+
+	printf("summary end boundaries = %d / %d / %d (corrrect / prediction / label), sensitivity = %.3lf, precision = %.3lf\n", correct0, predict0, label0, correct0 * 1.0 / label0, correct0 * 1.0 / predict0);
+	printf("summary start boundaries = %d / %d / %d (corrrect / prediction / label), sensitivity = %.3lf, precision = %.3lf\n", correct2, predict2, label2, correct2 * 1.0 / label2, correct2 * 1.0 / predict2);
+	//printf("summary label1 = %d / %d / %d (corrrect / prediction / label), sensitivity = %.3lf, precision = %.3lf\n", correct1, predict1, label1, correct1 * 1.0 / label1, correct1 * 1.0 / predict1);
+	//printf("summary abundance, %d samples with 0 or 2 labels, average deviation = %.3lf\n", nsample, abdratio);
 
 	return 0;
 }

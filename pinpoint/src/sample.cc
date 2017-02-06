@@ -255,7 +255,6 @@ int sample::print(int index)
 			correct0, predict0, label0, 
 			correct2, predict2, label2, 
 			correct1, predict1, label1);
-
 	return 0;
 
 	// print blocks
@@ -273,5 +272,25 @@ int sample::print(int index)
 		int p = blocks2[i].pos;
 		positions[p].print();
 	}
+	return 0;
+}
+
+int sample::print_result(int index)
+{
+	for(int i = 0; i < blocks0.size(); i++)
+	{
+		int p = blocks0[i].pos;
+		printf("sample %d: end boundary at position %d\n", index, p);
+	}
+
+	for(int i = 0; i < blocks2.size(); i++)
+	{
+		int p = blocks2[i].pos;
+		printf("sample %d: start boundary at position %d\n", index, p);
+	}
+
+	printf("sample %d: summary end boundaries = %d / %d / %d\n", index, correct0, predict0, label0); 
+	printf("sample %d: summary start boundaries = %d / %d / %d\n", index, correct2, predict2, label2); 
+
 	return 0;
 }

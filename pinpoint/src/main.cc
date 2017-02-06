@@ -16,6 +16,8 @@ int main(int argc, const char ** argv)
 		return 0;
 	}
 
+	parse_arguments(argc, argv);
+
 	pinpoint pp(argv[1], argv[2]);
 	pp.solve();
 
